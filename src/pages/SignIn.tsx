@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import keyImage from "../images/key.jpg";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import GoogleSignButton from "../components/GoogleSignButton";
 
 interface IFormData {
   email: string;
@@ -25,7 +26,7 @@ function SignIn() {
     formState: { errors },
   } = useForm<IFormData>();
 
-  // submit 후 호출
+  // submit 후 호출, firebase email login
   const onValid = ({ email, password }: IFormData) => {
     console.log(email, password);
   };
@@ -131,7 +132,7 @@ function SignIn() {
 
             <button
               type="submit"
-              className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white rounded-[4px] shadow-sm hover:bg-slate-400 hover:shadow-lg scale-105 duration-300"
+              className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white rounded shadow-sm hover:bg-slate-400 hover:shadow-lg scale-105 duration-300"
             >
               Sign In
             </button>
@@ -145,6 +146,9 @@ function SignIn() {
             >
               <p className=" text-center font-semibold mx-4">OR</p>
             </div>
+
+            {/* 구글 로그인 버튼 */}
+            <GoogleSignButton />
           </form>
         </div>
       </div>
