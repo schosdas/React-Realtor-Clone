@@ -56,31 +56,33 @@ function SignIn() {
         <div className=" lg:w-[40%] md:w-[67%]  lg:ml-20">
           <form onSubmit={handleSubmit(onValid, inValid)}>
             {/* email */}
-            <input
-              placeholder="Email"
-              type="text"
-              className="w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500 mb-1"
-              {...register("email", {
-                // 에러 메시지를 직접 입력 가능
-                required: { value: true, message: "이메일을 입력해주세요" },
-                // 정규식
-                pattern: {
-                  value: emailRegex,
-                  message: "이메일을 확인해주세요",
-                },
-              })}
-            ></input>
-            {/* error text */}
-            <span className="w-full text-xs text-red-500 mb-5">
-              {errors.email?.message}
-            </span>
+            <div className="mb-3">
+              <input
+                placeholder="Email"
+                type="text"
+                className="w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500 "
+                {...register("email", {
+                  // 에러 메시지를 직접 입력 가능
+                  required: { value: true, message: "이메일을 입력해주세요" },
+                  // 정규식
+                  pattern: {
+                    value: emailRegex,
+                    message: "이메일을 확인해주세요",
+                  },
+                })}
+              ></input>
+              {/* error text */}
+              <span className="w-full text-xs text-red-500">
+                {errors.email?.message}
+              </span>
+            </div>
 
             {/* password, 아이콘 배치를 위해 relative로 만들고 아이콘은 absolute */}
-            <div className=" relative">
+            <div className=" relative mb-5">
               <input
                 placeholder="Password"
                 type={showingPassword ? "text" : "password"} // 패스워드 보이기/감추기
-                className="w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500 mb-1"
+                className="w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500 "
                 {...register("password", {
                   // 에러 메시지를 직접 입력 가능
                   required: { value: true, message: "비밀번호를 입력해주세요" },
@@ -96,26 +98,24 @@ function SignIn() {
               {showingPassword ? (
                 <AiFillEye
                   onClick={toggleHide}
-                  className=" absolute right-3 top-4"
+                  className=" absolute right-3 top-4 cursor-pointer text-lg"
                 />
               ) : (
                 <AiFillEyeInvisible
                   onClick={toggleHide}
-                  className=" absolute right-3 top-4"
+                  className=" absolute right-3 top-4 cursor-pointer text-lg"
                 />
               )}
+              {/* error text */}
+              <span className=" text-xs text-red-500">
+                {errors.password?.message}
+              </span>
             </div>
-            {/* error text */}
-            <span className=" text-xs text-red-500 mb-5">
-              {errors.password?.message}
-            </span>
-
-            {/* 그라데이션 효과 등 */}
             <button
               type="submit"
               className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white rounded-[4px] hover:bg-slate-400 scale-105 duration-300"
             >
-              Login
+              Sign In
             </button>
           </form>
         </div>
