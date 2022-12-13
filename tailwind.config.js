@@ -4,5 +4,8 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    // form ui 라이브러리 추가 (기본 스타일 변경)
+    require("@tailwindcss/forms"),
+  ],
 };
