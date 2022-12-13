@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import keyImage from "../images/key.jpg";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 interface IFormData {
   email: string;
@@ -78,7 +79,7 @@ function SignIn() {
             </div>
 
             {/* password, 아이콘 배치를 위해 relative로 만들고 아이콘은 absolute */}
-            <div className=" relative mb-5">
+            <div className=" relative mb-3">
               <input
                 placeholder="Password"
                 type={showingPassword ? "text" : "password"} // 패스워드 보이기/감추기
@@ -111,12 +112,39 @@ function SignIn() {
                 {errors.password?.message}
               </span>
             </div>
+
+            {/* forget password, sign up links */}
+            <div className="mb-5 flex justify-between text-sm">
+              <p className="">
+                Don't have a account?
+                <Link
+                  to="/sign-up"
+                  className=" ml-1 text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
+                >
+                  Resister
+                </Link>
+              </p>
+              <p className="text-blue-500 hover:text-blue-700 transition duration-300 ease-in-out">
+                <Link to="/forget-password">Forget password?</Link>
+              </p>
+            </div>
+
             <button
               type="submit"
-              className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white rounded-[4px] hover:bg-slate-400 scale-105 duration-300"
+              className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white rounded-[4px] shadow-sm hover:bg-slate-400 hover:shadow-lg scale-105 duration-300"
             >
               Sign In
             </button>
+
+            {/* custom dividid line */}
+            {/* before, after를 사용하여 앞과 뒤에 내용 추가 가능 */}
+            <div
+              className="my-4 flex items-center 
+              before:border-t before:flex-1  before:border-gray-300 
+              after:border-t after:flex-1 after:border-gray-300"
+            >
+              <p className=" text-center font-semibold mx-4">OR</p>
+            </div>
           </form>
         </div>
       </div>
