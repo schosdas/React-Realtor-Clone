@@ -132,7 +132,7 @@ function SignIn() {
 
             <button
               type="submit"
-              className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white rounded shadow-sm hover:bg-slate-400 hover:shadow-lg scale-105 duration-300"
+              className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white uppercase rounded shadow-sm hover:bg-slate-400 hover:shadow-lg scale-105 duration-300"
             >
               Sign In
             </button>
