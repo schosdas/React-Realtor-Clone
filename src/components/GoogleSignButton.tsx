@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { auth, db } from "../firebase";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
-import { COL_USERS } from "../key";
+import { COL_USERS } from "../constants/key";
 
 function GoogleSignButton() {
   const navigate = useNavigate();

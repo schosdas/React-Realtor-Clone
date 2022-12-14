@@ -9,6 +9,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { isLoadingAtom } from "../atom";
 import { useRecoilState } from "recoil";
+import { emailRegex, passwordRegex } from "../constants/regexp";
 
 interface IFormData {
   email: string;
@@ -20,11 +21,6 @@ function SignIn() {
   // const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useRecoilState(isLoadingAtom);
   const [showingPassword, setShowingPassword] = useState(false);
-  // 이메일/패스워드 정규식
-  const emailRegex =
-    /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-  // 숫자, 영문자, 특수문자 8글자 이상
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
 
   // react-hook-form
   const {

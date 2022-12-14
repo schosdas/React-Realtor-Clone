@@ -7,10 +7,11 @@ import GoogleSignButton from "../components/GoogleSignButton";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { COL_USERS } from "../key";
+import { COL_USERS } from "../constants/key";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { isLoadingAtom } from "../atom";
+import { emailRegex, nicknameRegex, passwordRegex } from "../constants/regexp";
 
 interface IFormData {
   nickname: string;
@@ -23,13 +24,6 @@ function SignUp() {
   // const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useRecoilState(isLoadingAtom);
   const [showingPassword, setShowingPassword] = useState(false);
-  //닉네임 정규식 (3자 이상 16자 이하, 영어 또는 숫자로 구성)
-  const nicknameRegex = /^(?=.*[a-z0-9])[a-z0-9]{3,16}$/;
-  // 이메일 정규식
-  const emailRegex =
-    /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-  // 패스워드 정규식 (숫자, 영문자, 특수문자 8글자 이상)
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
 
   // react-hook-form
   const {
@@ -133,7 +127,7 @@ w-[67%] lg:w-[50%] md:mb-6 mb-12"
               <input
                 placeholder="Nickname"
                 type="text"
-                className="w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500 "
+                className="w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500"
                 {...register("nickname", {
                   // 에러 메시지를 직접 입력 가능
                   required: { value: true, message: "닉네임을 입력해주세요" },

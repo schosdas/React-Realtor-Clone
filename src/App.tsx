@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRecoilState } from "recoil";
 import { isLoadingAtom } from "./atom";
-import BeatLoader from "react-spinners/BeatLoader";
+import GridLoader from "react-spinners/GridLoader";
 
 function App() {
   const [isLoading, setIsLoading] = useRecoilState(isLoadingAtom);
@@ -15,20 +15,20 @@ function App() {
       {/* 모든 페이지에서 사용가능하도록 App에서 사용 */}
       <ToastContainer
         position="bottom-center"
-        autoClose={3000}
-        hideProgressBar={false}
+        autoClose={2000}
+        hideProgressBar
         newestOnTop={false}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss
         draggable
-        // pauseOnHover
+        pauseOnHover={false}
         theme="dark"
       />
 
       {/* spinner loading  */}
       {isLoading && (
-        <BeatLoader color="#36d7b7" className=" fixed top-1/2 left-1/2" />
+        <GridLoader color="#36d7b7" className=" fixed top-1/2 left-1/2" />
       )}
     </>
   );
