@@ -7,6 +7,7 @@ import GoogleSignButton from "../components/GoogleSignButton";
 import { toast } from "react-toastify";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import BeatLoader from "react-spinners/BeatLoader";
 
 interface IFormData {
   email: string;
@@ -15,6 +16,7 @@ interface IFormData {
 
 function SignIn() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [showingPassword, setShowingPassword] = useState(false);
   // 이메일/패스워드 정규식
   const emailRegex =
@@ -32,10 +34,14 @@ function SignIn() {
 
   // submit 후 호출, firebase email login
   const onValid = async ({ email, password }: IFormData) => {
-    console.log(email, password);
+    // 중복 클릭 방지
+    if (loading) {
+      return;
+    }
 
-    // email login, get user data, route to home page
     try {
+      setLoading(true); // loading
+
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -43,10 +49,12 @@ function SignIn() {
       );
       const user = userCredential.user;
 
-      // 완료 후 페이지 이동
+      // 완료 후 페이지 이동 등
+      setLoading(false);
       toast.success("Sign in was successful");
       navigate("/");
     } catch (error: any) {
+      setLoading(false);
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
@@ -57,6 +65,11 @@ function SignIn() {
 
   // submit 실패
   const inValid = (data: any) => {
+    // 중복 클릭 방지
+    if (loading) {
+      return;
+    }
+
     console.log("invalid: ", data);
     toast.error("Form Valid Error!");
   };
@@ -67,15 +80,18 @@ function SignIn() {
   };
 
   return (
-    <section className=" mt-6">
+    <section>
       {/* title */}
-      <h1 className=" text-3xl text-center font-bold">Sign In</h1>
+      <h1 className="mt-6 text-3xl text-center font-bold">Sign In</h1>
 
       {/* image, form 부분을 반응형으로 row 또는 colum */}
       {/* flex wrap를 사용하면 내부 요소들이 박스 범위보다 크면 여러 행으로 나눠서 정렬 (세로 정렬) */}
       <div className="flex justify-center items-center flex-wrap w-full  px-6 py-12 max-w-6xl mx-auto">
         {/* image (이미지 오류 시 import로 불러오기) */}
-        <div className=" md:w-[67%] lg:w-[50%] md:mb-6 mb-12">
+        <div
+          className=" md:import BeatLoader from '../../node_modules/react-spinners/umd/BeatLoader.d';
+w-[67%] lg:w-[50%] md:mb-6 mb-12"
+        >
           <img src={keyImage} alt="key" className="w-full rounded-2xl" />
         </div>
 
@@ -177,6 +193,11 @@ function SignIn() {
           </form>
         </div>
       </div>
+
+      {/* spinner loading  */}
+      {loading && (
+        <BeatLoader color="#36d7b7" className=" fixed top-1/2 left-1/2" />
+      )}
     </section>
   );
 }

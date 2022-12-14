@@ -49,6 +49,7 @@ function Header() {
               </li>
             </Link>
 
+            {/* 로그인 상태에 따라 로그인 or 프로필 */}
             <Link to="/sign-in">
               <li
                 className={`text-sm font-semibold py-3 hover:text-red-500   border-b-[3px]  ${

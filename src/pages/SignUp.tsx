@@ -9,6 +9,7 @@ import { auth, db } from "../firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { COL_USERS } from "../key";
 import { toast } from "react-toastify";
+import BeatLoader from "react-spinners/BeatLoader";
 
 interface IFormData {
   nickname: string;
@@ -18,6 +19,7 @@ interface IFormData {
 
 function SignUp() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [showingPassword, setShowingPassword] = useState(false);
   //닉네임 정규식 (3자 이상 16자 이하, 영어 또는 숫자로 구성)
   const nicknameRegex = /^(?=.*[a-z0-9])[a-z0-9]{3,16}$/;
@@ -37,9 +39,16 @@ function SignUp() {
 
   // submit 후 호출, firebase email signup
   const onValid = async ({ nickname, email, password }: IFormData) => {
+    // 중복 클릭 방지
+    if (loading) {
+      return;
+    }
+
     // firebase auth, create firestore user doc
     // then-catch 보다 async-await, try-catch 가 좀 더 유용하다고 함
     try {
+      setLoading(true); //loading
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -61,10 +70,12 @@ function SignUp() {
 
       // create user firestore (doc의 파라미터: firestore, col name, doc name)
       await setDoc(doc(db, COL_USERS, user.uid), userModel);
+      // 완료 후 페이지 이동 등
+      setLoading(false);
       toast.success("Sign up was successful");
-      // 완료 후 페이지 이동
       navigate("/");
     } catch (error: any) {
+      setLoading(false);
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
@@ -82,6 +93,11 @@ function SignUp() {
 
   // submit 실패
   const inValid = (data: any) => {
+    // 중복 클릭 방지
+    if (loading) {
+      return;
+    }
+
     console.log("invalid: ", data);
     toast.error("Form Valid Error!");
   };
@@ -227,6 +243,11 @@ w-[67%] lg:w-[50%] md:mb-6 mb-12"
           </form>
         </div>
       </div>
+
+      {/* spinner loading  */}
+      {loading && (
+        <BeatLoader color="#36d7b7" className=" fixed top-1/2 left-1/2" />
+      )}
     </section>
   );
 }
