@@ -1,14 +1,19 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import keyImage from "../images/key.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleSignButton from "../components/GoogleSignButton";
+import { toast } from "react-toastify";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../firebase";
 
 interface IFormData {
   email: string;
 }
 
 function Forgetpassword() {
+  const navigate = useNavigate();
+
   // 이메일/패스워드 정규식
   const emailRegex =
     /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
@@ -21,9 +26,16 @@ function Forgetpassword() {
     formState: { errors },
   } = useForm<IFormData>();
 
-  // submit 후 호출, firebase email login
-  const onValid = ({ email }: IFormData) => {
-    console.log(email);
+  // submit 후 호출, 이메일로 링크 전송
+  const onValid = async ({ email }: IFormData) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+
+      toast.success("Success send to email");
+      navigate("/sign-in");
+    } catch (error) {
+      toast.error("Could not send reset password");
+    }
   };
 
   // submit 실패

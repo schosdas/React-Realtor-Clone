@@ -4,7 +4,7 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { auth, db } from "../firebase";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { COL_USERS } from "../key";
 
 function GoogleSignButton() {
@@ -36,8 +36,13 @@ function GoogleSignButton() {
         createDate: serverTimestamp(), // timestamp of firestore
       };
 
-      // create user firestore
-      await setDoc(doc(db, COL_USERS, user.uid), userModel);
+      // 데이터베이스에 이미 있는지 체크하고 없으면 유저 db 생성
+      const docRef = doc(db, COL_USERS, user.uid);
+      const snapshot = await getDoc(docRef);
+
+      if (!snapshot.exists()) {
+        await setDoc(docRef, userModel);
+      }
 
       // 완료 후 페이지 이동
       toast.success("Sign in was successful");

@@ -50,6 +50,8 @@ function SignIn() {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
+
+      toast.error("Login error!");
     }
   };
 
