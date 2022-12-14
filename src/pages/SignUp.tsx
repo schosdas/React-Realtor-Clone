@@ -4,8 +4,10 @@ import keyImage from "../images/key.jpg";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import GoogleSignButton from "../components/GoogleSignButton";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth, db } from "../firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { COL_USERS } from "../key";
 
 interface IFormData {
   nickname: string;
@@ -32,20 +34,39 @@ function SignUp() {
   } = useForm<IFormData>();
 
   // submit 후 호출, firebase email signup
-  const onValid = ({ nickname, email, password }: IFormData) => {
+  const onValid = async ({ nickname, email, password }: IFormData) => {
     console.log("onValid: ", nickname, email, password);
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log(user);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorMessage);
+    // firebase auth, create firestore user doc
+    // then-catch 보다 async-await, try-catch 가 좀 더 유용하다고 함
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // Signed in
+      const user = userCredential.user;
+
+      // update user profile, userCredential의 데이터 업데이트
+      updateProfile(user, {
+        displayName: nickname,
       });
+      console.log(user);
+
+      const userModel = {
+        email: email,
+        nickname: nickname,
+        createDate: serverTimestamp(), // timestamp of firestore
+      };
+
+      // create user firestore
+      await setDoc(doc(db, COL_USERS, user.uid), userModel);
+    } catch (error: any) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+    }
   };
 
   // submit 실패
@@ -67,7 +88,10 @@ function SignUp() {
       {/* flex wrap를 사용하면 내부 요소들이 박스 범위보다 크면 여러 행으로 나눠서 정렬 (세로 정렬) */}
       <div className="flex justify-center items-center flex-wrap w-full  px-6 py-12 max-w-6xl mx-auto">
         {/* image (이미지 오류 시 import로 불러오기) */}
-        <div className=" md:w-[67%] lg:w-[50%] md:mb-6 mb-12">
+        <div
+          className=" md:import { UserCredential } from '../../node_modules/@firebase/auth/dist/src/model/public_types.d';
+w-[67%] lg:w-[50%] md:mb-6 mb-12"
+        >
           <img src={keyImage} alt="key" className="w-full rounded-2xl" />
         </div>
 

@@ -5,6 +5,8 @@ import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import GoogleSignButton from "../components/GoogleSignButton";
 import { toast, ToastContainer } from "react-toastify";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 interface IFormData {
   email: string;
@@ -28,8 +30,23 @@ function SignIn() {
   } = useForm<IFormData>();
 
   // submit 후 호출, firebase email login
-  const onValid = ({ email, password }: IFormData) => {
+  const onValid = async ({ email, password }: IFormData) => {
     console.log(email, password);
+
+    // email login, get user data, route to home page
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      console.log(user);
+    } catch (error: any) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+    }
   };
 
   // submit 실패
