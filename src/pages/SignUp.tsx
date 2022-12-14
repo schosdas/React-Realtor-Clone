@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import keyImage from "../images/key.jpg";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleSignButton from "../components/GoogleSignButton";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { COL_USERS } from "../key";
+import { toast } from "react-toastify";
 
 interface IFormData {
   nickname: string;
@@ -16,6 +17,7 @@ interface IFormData {
 }
 
 function SignUp() {
+  const navigate = useNavigate();
   const [showingPassword, setShowingPassword] = useState(false);
   //닉네임 정규식 (3자 이상 16자 이하, 영어 또는 숫자로 구성)
   const nicknameRegex = /^(?=.*[a-z0-9])[a-z0-9]{3,16}$/;
@@ -35,8 +37,6 @@ function SignUp() {
 
   // submit 후 호출, firebase email signup
   const onValid = async ({ nickname, email, password }: IFormData) => {
-    console.log("onValid: ", nickname, email, password);
-
     // firebase auth, create firestore user doc
     // then-catch 보다 async-await, try-catch 가 좀 더 유용하다고 함
     try {
@@ -52,7 +52,6 @@ function SignUp() {
       updateProfile(user, {
         displayName: nickname,
       });
-      console.log(user);
 
       const userModel = {
         email: email,
@@ -60,18 +59,41 @@ function SignUp() {
         createDate: serverTimestamp(), // timestamp of firestore
       };
 
-      // create user firestore
+      // create user firestore (doc의 파라미터: firestore, col name, doc name)
       await setDoc(doc(db, COL_USERS, user.uid), userModel);
+      toast.success("Sign up was successful");
+      // 완료 후 페이지 이동
+      navigate("/");
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
+
+      // 에러 종류 체크 (이메일 중복 등)
+      switch (errorCode) {
+        case "auth/email-already-in-use":
+          return toast.error("Email already exists!");
+
+        case "auth/internal-error":
+          return toast.error("Unknown Error!, Please try next time");
+      }
     }
   };
 
   // submit 실패
   const inValid = (data: any) => {
     console.log("invalid: ", data);
+
+    toast.error("Form Valid Error!", {
+      position: "bottom-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
   };
 
   // password hide toggle
