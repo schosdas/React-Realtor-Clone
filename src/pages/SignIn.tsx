@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import keyImage from "../images/key.jpg";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleSignButton from "../components/GoogleSignButton";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
@@ -14,6 +14,7 @@ interface IFormData {
 }
 
 function SignIn() {
+  const navigate = useNavigate();
   const [showingPassword, setShowingPassword] = useState(false);
   // 이메일/패스워드 정규식
   const emailRegex =
@@ -41,7 +42,10 @@ function SignIn() {
         password
       );
       const user = userCredential.user;
-      console.log(user);
+
+      // 완료 후 페이지 이동
+      toast.success("Sign in was successful");
+      navigate("/");
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -52,6 +56,7 @@ function SignIn() {
   // submit 실패
   const inValid = (data: any) => {
     console.log("invalid: ", data);
+    toast.error("Form Valid Error!");
   };
 
   // password hide toggle

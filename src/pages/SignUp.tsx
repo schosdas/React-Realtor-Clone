@@ -75,7 +75,7 @@ function SignUp() {
           return toast.error("Email already exists!");
 
         case "auth/internal-error":
-          return toast.error("Unknown Error!, Please try next time");
+          return toast.error("Unknown error! Please try next time");
       }
     }
   };
@@ -83,17 +83,7 @@ function SignUp() {
   // submit 실패
   const inValid = (data: any) => {
     console.log("invalid: ", data);
-
-    toast.error("Form Valid Error!", {
-      position: "bottom-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-    });
+    toast.error("Form Valid Error!");
   };
 
   // password hide toggle
