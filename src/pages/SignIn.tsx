@@ -7,7 +7,8 @@ import GoogleSignButton from "../components/GoogleSignButton";
 import { toast } from "react-toastify";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
-import BeatLoader from "react-spinners/BeatLoader";
+import { isLoadingAtom } from "../atom";
+import { useRecoilState } from "recoil";
 
 interface IFormData {
   email: string;
@@ -16,7 +17,8 @@ interface IFormData {
 
 function SignIn() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useRecoilState(isLoadingAtom);
   const [showingPassword, setShowingPassword] = useState(false);
   // 이메일/패스워드 정규식
   const emailRegex =
@@ -35,12 +37,12 @@ function SignIn() {
   // submit 후 호출, firebase email login
   const onValid = async ({ email, password }: IFormData) => {
     // 중복 클릭 방지
-    if (loading) {
+    if (isLoading) {
       return;
     }
 
     try {
-      setLoading(true); // loading
+      setIsLoading(true); // loading
 
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -50,11 +52,11 @@ function SignIn() {
       const user = userCredential.user;
 
       // 완료 후 페이지 이동 등
-      setLoading(false);
+      setIsLoading(false);
       toast.success("Sign in was successful");
       navigate("/");
     } catch (error: any) {
-      setLoading(false);
+      setIsLoading(false);
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
@@ -66,7 +68,7 @@ function SignIn() {
   // submit 실패
   const inValid = (data: any) => {
     // 중복 클릭 방지
-    if (loading) {
+    if (isLoading) {
       return;
     }
 
@@ -193,11 +195,6 @@ w-[67%] lg:w-[50%] md:mb-6 mb-12"
           </form>
         </div>
       </div>
-
-      {/* spinner loading  */}
-      {loading && (
-        <BeatLoader color="#36d7b7" className=" fixed top-1/2 left-1/2" />
-      )}
     </section>
   );
 }
