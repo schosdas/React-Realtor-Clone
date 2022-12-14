@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import keyImage from "../images/key.jpg";
-import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import GoogleSignButton from "../components/GoogleSignButton";
 

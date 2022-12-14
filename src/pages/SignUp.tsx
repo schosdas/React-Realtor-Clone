@@ -4,6 +4,8 @@ import keyImage from "../images/key.jpg";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import GoogleSignButton from "../components/GoogleSignButton";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 interface IFormData {
   nickname: string;
@@ -31,7 +33,19 @@ function SignUp() {
 
   // submit 후 호출, firebase email signup
   const onValid = ({ nickname, email, password }: IFormData) => {
-    console.log(nickname, email, password);
+    console.log("onValid: ", nickname, email, password);
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
   };
 
   // submit 실패

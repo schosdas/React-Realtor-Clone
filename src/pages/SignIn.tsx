@@ -4,6 +4,7 @@ import keyImage from "../images/key.jpg";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import GoogleSignButton from "../components/GoogleSignButton";
+import { toast, ToastContainer } from "react-toastify";
 
 interface IFormData {
   email: string;
