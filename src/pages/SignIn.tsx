@@ -10,6 +10,7 @@ import { auth } from "../firebase";
 import { isLoadingAtom } from "../atom";
 import { useRecoilState } from "recoil";
 import { emailRegex, passwordRegex } from "../constants/regexp";
+import CustomButton from "../components/CustomButton";
 
 interface IFormData {
   email: string;
@@ -88,7 +89,8 @@ function SignIn() {
         {/* image (이미지 오류 시 import로 불러오기) */}
         <div
           className=" md:import BeatLoader from '../../node_modules/react-spinners/umd/BeatLoader.d';
-w-[67%] lg:w-[50%] md:mb-6 mb-12"
+w-[67%] lg:w-[50%] md:mb-import { type } from '../../node_modules/@remix-run/router/dist/index.d';
+6 mb-12"
         >
           <img src={keyImage} alt="key" className="w-full rounded-2xl" />
         </div>
@@ -169,12 +171,7 @@ w-[67%] lg:w-[50%] md:mb-6 mb-12"
               </p>
             </div>
 
-            <button
-              type="submit"
-              className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white uppercase rounded shadow-sm hover:bg-slate-400 hover:shadow-lg scale-105 duration-300"
-            >
-              Sign In
-            </button>
+            <CustomButton type="submit" text="Sign In" />
 
             {/* custom dividid line */}
             {/* before, after를 사용하여 앞과 뒤에 내용 추가 가능 */}

@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
 import { isLoadingAtom } from "../atom";
 import { emailRegex, nicknameRegex, passwordRegex } from "../constants/regexp";
+import CustomButton from "../components/CustomButton";
 
 interface IFormData {
   nickname: string;
@@ -217,12 +218,7 @@ w-[67%] lg:w-[50%] md:mb-6 mb-12"
               </p>
             </div>
 
-            <button
-              type="submit"
-              className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white uppercase rounded shadow-sm hover:bg-slate-400 hover:shadow-lg scale-105 duration-300"
-            >
-              Sign Up
-            </button>
+            <CustomButton type="submit" text="Sign Up" />
 
             {/* custom dividid line */}
             {/* before, after를 사용하여 앞과 뒤에 내용 추가 가능 */}
