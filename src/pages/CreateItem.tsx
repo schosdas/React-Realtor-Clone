@@ -4,13 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { isLoadingState } from "../store/atom";
 import { toast } from "react-toastify";
-
-// 중복되는 css
-const buttonCss =
-  "px-7 py-3 font-medium text-sm uppercase shadow-md rounded hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full";
-
-const inputCss =
-  "w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500 transition duration-150 ease-in-out";
+import {
+  buttonCss,
+  inputCss,
+  numInputCss,
+  textAreaCss,
+} from "../constants/cssCode";
 
 interface IItemFormData {
   type: string;
@@ -158,7 +157,7 @@ function CreateItem() {
                 })}
                 min="1"
                 max="50"
-                className="w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded  focus:text-gray-700 focus:bg-white focus:border-slate-600 text-center transition duration-150 ease-in-out"
+                className={`${numInputCss}`}
               />
             </div>
 
@@ -171,7 +170,7 @@ function CreateItem() {
                 })}
                 min="1"
                 max="50"
-                className="w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded focus:text-gray-700 focus:bg-white focus:border-slate-600 text-center transition duration-150 ease-in-out"
+                className={`${numInputCss}`}
               />
             </div>
           </div>
@@ -253,8 +252,24 @@ function CreateItem() {
           </div>
 
           {/* Address */}
+          <p className="text-lg mt-6 font-semibold">Address</p>
+          <textarea
+            placeholder="Address"
+            {...register("address", {
+              required: { value: true, message: "입력해주세요" },
+            })}
+            className={`${textAreaCss}`}
+          />
 
           {/* Description */}
+          <p className="text-lg mt-6 font-semibold">Description</p>
+          <textarea
+            placeholder="Description"
+            {...register("description", {
+              required: { value: true, message: "입력해주세요" },
+            })}
+            className={`${textAreaCss}`}
+          />
 
           {/* Offer */}
           <p className="text-lg mt-6 font-semibold">Offer</p>
@@ -295,6 +310,32 @@ function CreateItem() {
           </div>
 
           {/* Regular Price */}
+          <div className="flex items-center mb-6">
+            <div className="">
+              <p className="text-lg font-semibold">Regular price</p>
+              <div className="w-full flex  justify-center items-center space-x-6">
+                <input
+                  type="number"
+                  {...register("regularPrice", {
+                    required: { value: true, message: "입력해주세요" },
+                  })}
+                  min="50"
+                  max="400000000"
+                  className={`${numInputCss}`}
+                />
+                {/* rent를 선택했을 경우 출력 */}
+                {getValues("type") === "rent" && (
+                  <div className="">
+                    <p className="text-md w-full whitespace-nowrap">
+                      $ / Month
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/*  */}
 
           {/* Image */}
 
