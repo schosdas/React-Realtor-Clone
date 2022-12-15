@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
-import { doc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 import { isLoadingState } from "../store/atom";
 import { nicknameRegex } from "../constants/regexp";
 import CustomButton from "../components/CustomButton";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
+import { COL_USERS, DOC_NICKNAME } from "../constants/key";
 
 interface IFormData {
   nickname: string;
+  email: string;
 }
 
 function Profile() {
@@ -31,9 +33,10 @@ function Profile() {
   // setValue를 사용하여 유저 정보를 input value에 입력
   useEffect(() => {
     setValue("nickname", auth.currentUser?.displayName ?? "");
+    setValue("email", auth.currentUser?.email ?? "");
   }, []);
 
-  const onValid = async ({ nickname }: IFormData) => {
+  const onValid = async ({ nickname, email }: IFormData) => {
     // 중복 클릭 방지
     if (isLoading) {
       return;
@@ -46,15 +49,19 @@ function Profile() {
       return;
     }
 
+    // apply 클릭으로도 가능하도록
     try {
       setIsLoading(true);
-      // todo firestore update, apply 클릭으로도 가능하도록
-      // await updateProfile(auth.currentUser, {
-      //   displayName: nickname,
-      // });
+      // profile update
+      await updateProfile(auth.currentUser!, {
+        displayName: nickname,
+      });
 
-      // form update
-      setValue("nickname", nickname);
+      // firestore update
+      const docRef = doc(db, COL_USERS, auth.currentUser!.uid);
+      await updateDoc(docRef, {
+        DOC_NICKNAME: nickname,
+      });
 
       // 완료 후
       setIsLoading(false);
@@ -102,10 +109,12 @@ function Profile() {
 
     try {
       setIsLoading(true);
-      // todo firestore update, submit으로도 가능하도록
+      // profile update
+      await updateProfile(auth.currentUser!, {
+        displayName: nickname,
+      });
 
-      // form update
-      setValue("nickname", nickname);
+      // firestore update
 
       // 완료 후
       setIsLoading(false);
@@ -164,6 +173,7 @@ function Profile() {
                 // edit mode 상태에 따라 변경
                 disabled
                 className={`w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none `}
+                {...register("email")}
               ></input>
             </div>
 
