@@ -7,7 +7,7 @@ import GoogleSignButton from "../components/GoogleSignButton";
 import { toast } from "react-toastify";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
-import { isLoadingAtom } from "../atom";
+import { isLoadingState } from "../store/atom";
 import { useRecoilState } from "recoil";
 import { emailRegex, passwordRegex } from "../constants/regexp";
 import CustomButton from "../components/CustomButton";
@@ -20,7 +20,7 @@ interface IFormData {
 function SignIn() {
   const navigate = useNavigate();
   // const [loading, setLoading] = useState(false);
-  const [isLoading, setIsLoading] = useRecoilState(isLoadingAtom);
+  const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
   const [showingPassword, setShowingPassword] = useState(false);
 
   // react-hook-form

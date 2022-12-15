@@ -10,7 +10,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { COL_USERS } from "../constants/key";
 import { toast } from "react-toastify";
 import { useRecoilState } from "recoil";
-import { isLoadingAtom } from "../atom";
+import { isLoadingState } from "../store/atom";
 import { emailRegex, nicknameRegex, passwordRegex } from "../constants/regexp";
 import CustomButton from "../components/CustomButton";
 
@@ -23,7 +23,7 @@ interface IFormData {
 function SignUp() {
   const navigate = useNavigate();
   // const [loading, setLoading] = useState(false);
-  const [isLoading, setIsLoading] = useRecoilState(isLoadingAtom);
+  const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
   const [showingPassword, setShowingPassword] = useState(false);
 
   // react-hook-form

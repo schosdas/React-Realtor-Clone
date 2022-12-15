@@ -3,7 +3,7 @@ import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
 import { doc } from "firebase/firestore";
 import { useForm } from "react-hook-form";
-import { isLoadingAtom } from "../atom";
+import { isLoadingState } from "../store/atom";
 import { emailRegex, nicknameRegex } from "../constants/regexp";
 import CustomButton from "../components/CustomButton";
 import { auth } from "../firebase";
@@ -14,7 +14,7 @@ interface IFormData {
 }
 
 function Profile() {
-  const [isLoading, setIsLoading] = useRecoilState(isLoadingAtom);
+  const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
   const [isEditMode, setIsEditMode] = useState(false);
 
   // react-hook-form

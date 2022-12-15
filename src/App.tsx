@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Router from "./router/Router";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRecoilState } from "recoil";
-import { isLoadingAtom } from "./atom";
+import { useRecoilValue } from "recoil";
+import { isLoadingState } from "./store/atom";
 import GridLoader from "react-spinners/GridLoader";
 
 function App() {
-  const [isLoading, setIsLoading] = useRecoilState(isLoadingAtom);
+  const isLoading = useRecoilValue(isLoadingState);
 
   return (
     <>
