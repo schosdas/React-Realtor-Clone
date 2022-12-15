@@ -4,56 +4,69 @@ import { toast } from "react-toastify";
 import { doc } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 import { isLoadingState } from "../store/atom";
-import { emailRegex, nicknameRegex } from "../constants/regexp";
+import { nicknameRegex } from "../constants/regexp";
 import CustomButton from "../components/CustomButton";
 import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
+import { updateProfile } from "firebase/auth";
 
 interface IFormData {
   nickname: string;
-  email: string;
 }
 
 function Profile() {
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
   const [isEditMode, setIsEditMode] = useState(false);
+  const navigate = useNavigate();
 
   // react-hook-form
   const {
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<IFormData>();
 
-  // firestore에 저장된 유저 데이터 가져오기
-  // useEffect(() => {
-  //   // setValue를 사용하여 input value 채우기
-  //   const nickname = auth.currentUser?.displayName;
-  //   const email = auth.currentUser?.email;
-  //   setValue("nickname", nickname!);
-  //   setValue("email", email!);
-  //   console.log(nickname, email);
-  // }, []);
+  // setValue를 사용하여 유저 정보를 input value에 입력
+  useEffect(() => {
+    setValue("nickname", auth.currentUser?.displayName ?? "");
+  }, []);
 
-  const onValid = async ({ nickname, email }: IFormData) => {
+  const onValid = async ({ nickname }: IFormData) => {
     // 중복 클릭 방지
     if (isLoading) {
       return;
     }
 
-    // firestore update
+    // 변경 사항이 없으면 넘어가기
+    if (auth.currentUser?.displayName === nickname) {
+      console.log("변경 사항 없음");
+      setIsEditMode(false);
+      return;
+    }
 
-    // 완료 후
-    toast.success("Update was successful");
     try {
       setIsLoading(true);
+      // todo firestore update, apply 클릭으로도 가능하도록
+      // await updateProfile(auth.currentUser, {
+      //   displayName: nickname,
+      // });
+
+      // form update
+      setValue("nickname", nickname);
+
+      // 완료 후
+      setIsLoading(false);
+      setIsEditMode(false);
+      toast.success("Update success");
     } catch (error: any) {
       setIsLoading(false);
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
 
-      toast.error("Update error");
+      toast.error("Update failed!");
     }
   };
 
@@ -65,6 +78,47 @@ function Profile() {
 
     console.log("invalid: ", data);
     toast.error("Form Valid Error!");
+  };
+
+  // input disable 제거
+  const changeEditMode = () => {
+    setIsEditMode(true);
+  };
+
+  const updateUserInfo = async () => {
+    const nickname = getValues("nickname");
+
+    // 중복 클릭 방지
+    if (isLoading) {
+      return;
+    }
+
+    // 변경 사항이 없으면 넘어가기
+    if (auth.currentUser?.displayName === nickname) {
+      console.log("변경 사항 없음");
+      setIsEditMode(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      // todo firestore update, submit으로도 가능하도록
+
+      // form update
+      setValue("nickname", nickname);
+
+      // 완료 후
+      setIsLoading(false);
+      setIsEditMode(false);
+      toast.success("Update success");
+    } catch (error: any) {
+      setIsLoading(false);
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+
+      toast.error("Update failed!");
+    }
   };
 
   return (
@@ -81,11 +135,11 @@ function Profile() {
               <input
                 placeholder="Nickname"
                 type="text"
-                // 기본 disabled, edit mode일 때 제거
-                disabled
-                className={`w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none ${
-                  isEditMode ? "hover:border-yellow-500" : ""
-                }`}
+                // edit mode 상태에 따라 변경
+                disabled={!isEditMode}
+                className={`w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none
+                ${isEditMode ? "bg-red-200" : ""}
+                ${isEditMode ? "hover:border-yellow-500" : ""}`}
                 {...register("nickname", {
                   // 에러 메시지를 직접 입력 가능
                   required: { value: true, message: "닉네임을 입력해주세요" },
@@ -102,42 +156,36 @@ function Profile() {
               </span>
             </div>
 
-            {/* email */}
+            {/* email, 수정 불가 */}
             <div className="mb-6">
               <input
                 placeholder="Email"
                 type="text"
-                // 기본 disabled, edit mode일 때 제거
+                // edit mode 상태에 따라 변경
                 disabled
-                className={`w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none ${
-                  isEditMode ? "hover:border-yellow-500" : ""
-                }`}
-                {...register("email", {
-                  // 에러 메시지를 직접 입력 가능
-                  required: { value: true, message: "이메일을 입력해주세요" },
-                  // 정규식
-                  pattern: {
-                    value: emailRegex,
-                    message: "이메일을 확인해주세요",
-                  },
-                })}
+                className={`w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none `}
               ></input>
-              {/* error text */}
-              <span className="w-full text-xs text-red-500">
-                {errors.email?.message}
-              </span>
             </div>
 
-            {/* forget password, sign up links */}
+            {/* change user info & logout */}
             <div className="mb-6 flex justify-between text-sm   whitespace-nowrap">
               <p className="flex items-center">
                 Do want to change your name?
-                <span className=" ml-1 text-red-500 hover:text-red-700 cursor-pointer transition duration-300 ease-in-out">
+                <span
+                  onClick={isEditMode ? updateUserInfo : changeEditMode}
+                  className=" ml-1 text-red-500 hover:text-red-700 cursor-pointer transition duration-300 ease-in-out"
+                >
                   {isEditMode ? "Apply change" : "Edit"}
                 </span>
               </p>
 
-              <p className="text-blue-500 hover:text-blue-700 cursor-pointer transition duration-300 ease-in-out">
+              <p
+                onClick={() => {
+                  auth.signOut();
+                  navigate("/");
+                }}
+                className="text-blue-500 hover:text-blue-700 cursor-pointer transition duration-300 ease-in-out"
+              >
                 Sign out
               </p>
             </div>
