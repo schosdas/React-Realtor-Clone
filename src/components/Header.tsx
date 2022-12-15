@@ -1,10 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 function Header() {
+  const [isLogin, setIsLogin] = useState(false);
   const location = useLocation();
   const currentLocation = location.pathname;
   console.log(currentLocation);
+
+  // login check
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLogin(true);
+      } else {
+        console.log("Not Login Yet");
+        setIsLogin(false);
+      }
+    });
+  }, []);
 
   return (
     <div className=" bg-white shadow-sm border-b sticky top-0 z-50">
@@ -22,7 +37,6 @@ function Header() {
 
         {/* nav items */}
         <div>
-          {/* 로그인 상태에 따라 Sign In <-> Profile 변경 */}
           {/* []안에 값 입력하여 커스텀 css, className에서 조건문 사용 방법 */}
           <ul className="flex space-x-10">
             <Link to="/">
@@ -50,15 +64,16 @@ function Header() {
             </Link>
 
             {/* 로그인 상태에 따라 로그인 or 프로필 */}
-            <Link to="/sign-in">
+            <Link to={isLogin ? `/profile` : `/sign-in`}>
               <li
                 className={`text-sm font-semibold py-3 hover:text-red-500   border-b-[3px]  ${
-                  currentLocation === "/sign-in"
+                  currentLocation === "/sign-in" ||
+                  currentLocation === "/profile"
                     ? "border-b-red-500"
                     : "text-gray-400 border-b-transparent"
                 } `}
               >
-                Sign In
+                {isLogin ? `Profile` : `Sign In`}
               </li>
             </Link>
           </ul>
