@@ -25,8 +25,14 @@ function Router() {
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
-        <Route path="/sign-in" element={<SignInPage />} />
-        <Route path="/sign-up" element={<SignUpPage />} />
+        {/* 로그인 상태에서 로그인 페이지로 못가도록 */}
+        <Route path="/sign-in" element={<PrivateRoute />}>
+          <Route path="/sign-in" element={<SignInPage />} />
+        </Route>
+        <Route path="/sign-up" element={<PrivateRoute />}>
+          <Route path="/sign-up" element={<SignUpPage />} />
+        </Route>
+
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/offers" element={<Offers />} />
 

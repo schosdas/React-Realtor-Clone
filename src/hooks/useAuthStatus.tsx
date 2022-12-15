@@ -4,24 +4,24 @@ import { auth } from "../firebase";
 
 // custom hook, check login
 function useAuthStatus() {
-  const [login, setLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
   // 처음에 false로 만들면 PrivateRoute에서 로그인 체크 완료 전 return이 먼저되는 문제
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setLogin(true);
+        setIsLogin(true);
       } else {
         console.log("Not Login Yet");
-        setLogin(false);
+        setIsLogin(false);
       }
 
       setChecking(false);
     });
   }, []);
 
-  return { login, checking };
+  return { isLogin, checking };
 }
 
 export default useAuthStatus;
