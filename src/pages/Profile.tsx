@@ -7,9 +7,10 @@ import { isLoadingState } from "../store/atom";
 import { nicknameRegex } from "../constants/regexp";
 import CustomButton from "../components/CustomButton";
 import { auth, db } from "../firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
 import { COL_USERS, DOC_NICKNAME } from "../constants/key";
+import { FcHome } from "react-icons/fc";
 
 interface IFormData {
   nickname: string;
@@ -199,12 +200,20 @@ function Profile() {
                 Sign out
               </p>
             </div>
-
-            {/*  */}
-            <div>
-              <CustomButton type="submit">123</CustomButton>
-            </div>
           </form>
+
+          {/* Item Create Button  */}
+          <div>
+            <CustomButton type="submit">
+              <Link
+                to="/create-item"
+                className="flex justify-center items-center"
+              >
+                <FcHome className="mr-3 text-3xl bg-red-200 border-2 rounded-full p-1" />{" "}
+                sell or rent your home
+              </Link>
+            </CustomButton>
+          </div>
         </div>
       </section>
 

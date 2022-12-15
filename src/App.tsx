@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRecoilValue } from "recoil";
 import { isLoadingState } from "./store/atom";
 import GridLoader from "react-spinners/GridLoader";
+import Loader from "./components/Loader";
 
 function App() {
   const isLoading = useRecoilValue(isLoadingState);
@@ -27,9 +28,7 @@ function App() {
       />
 
       {/* spinner loading  */}
-      {isLoading && (
-        <GridLoader color="#36d7b7" className=" fixed top-1/2 left-1/2" />
-      )}
+      {isLoading && <Loader />}
     </>
   );
 }

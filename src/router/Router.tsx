@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "../components/Header";
 import PrivateRoute from "../components/PrivateRoute";
+import CreateItem from "../pages/CreateItem";
 import ForgetPassword from "../pages/ForgetPassword";
 import HomePage from "../pages/Home";
 import NotFound from "../pages/NotFound";
@@ -35,6 +36,7 @@ function Router() {
 
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/offers" element={<Offers />} />
+        <Route path="/create-item" element={<CreateItem />} />
 
         {/* 잘못된 경로, 404 Not Found  */}
         <Route path="*" element={<NotFound />}></Route>
