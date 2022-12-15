@@ -2,16 +2,16 @@ import React from "react";
 
 interface IProps {
   type: any;
-  text: string;
+  children: React.ReactNode;
 }
 
-function CustomButton({ type, text }: IProps) {
+function CustomButton({ type, children }: IProps) {
   return (
     <button
       type={type}
-      className="w-full border p-2 bg-gradient-to-r from-gray-800 bg-gray-500 text-white uppercase rounded shadow-sm hover:bg-slate-400 hover:shadow-lg scale-105 duration-300"
+      className="w-full bg-blue-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue-800"
     >
-      {text}
+      {children}
     </button>
   );
 }

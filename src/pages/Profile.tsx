@@ -5,6 +5,8 @@ import { doc } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 import { isLoadingAtom } from "../atom";
 import { emailRegex, nicknameRegex } from "../constants/regexp";
+import CustomButton from "../components/CustomButton";
+import { auth } from "../firebase";
 
 interface IFormData {
   nickname: string;
@@ -24,11 +26,14 @@ function Profile() {
   } = useForm<IFormData>();
 
   // firestore에 저장된 유저 데이터 가져오기
-  useEffect(() => {
-    // setValue를 사용하여 input value 채우기
-    setValue("nickname", "username");
-    setValue("email", "example@example.com");
-  }, []);
+  // useEffect(() => {
+  //   // setValue를 사용하여 input value 채우기
+  //   const nickname = auth.currentUser?.displayName;
+  //   const email = auth.currentUser?.email;
+  //   setValue("nickname", nickname!);
+  //   setValue("email", email!);
+  //   console.log(nickname, email);
+  // }, []);
 
   const onValid = async ({ nickname, email }: IFormData) => {
     // 중복 클릭 방지
@@ -124,17 +129,22 @@ function Profile() {
             </div>
 
             {/* forget password, sign up links */}
-            <div className="mb-5 flex justify-between text-sm">
-              <p>
+            <div className="mb-6 flex justify-between text-sm   whitespace-nowrap">
+              <p className="flex items-center">
                 Do want to change your name?
                 <span className=" ml-1 text-red-500 hover:text-red-700 cursor-pointer transition duration-300 ease-in-out">
-                  Edit
+                  {isEditMode ? "Apply change" : "Edit"}
                 </span>
               </p>
 
               <p className="text-blue-500 hover:text-blue-700 cursor-pointer transition duration-300 ease-in-out">
                 Sign out
               </p>
+            </div>
+
+            {/*  */}
+            <div>
+              <CustomButton type="submit">123</CustomButton>
             </div>
           </form>
         </div>

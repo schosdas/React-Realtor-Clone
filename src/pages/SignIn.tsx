@@ -171,7 +171,7 @@ w-[67%] lg:w-[50%] md:mb-import { type } from '../../node_modules/@remix-run/rou
               </p>
             </div>
 
-            <CustomButton type="submit" text="Sign In" />
+            <CustomButton type="submit">Sign In</CustomButton>
 
             {/* custom dividid line */}
             {/* before, after를 사용하여 앞과 뒤에 내용 추가 가능 */}

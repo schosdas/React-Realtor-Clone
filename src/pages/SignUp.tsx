@@ -218,7 +218,7 @@ w-[67%] lg:w-[50%] md:mb-6 mb-12"
               </p>
             </div>
 
-            <CustomButton type="submit" text="Sign Up" />
+            <CustomButton type="submit">Sign Up</CustomButton>
 
             {/* custom dividid line */}
             {/* before, after를 사용하여 앞과 뒤에 내용 추가 가능 */}
