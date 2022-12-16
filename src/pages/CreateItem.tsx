@@ -8,6 +8,7 @@ import { buttonCss, numInputCss, textAreaCss } from "../constants/cssCode";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 import Geocode from "react-geocode";
+import Postcode from "react-daum-postcode";
 
 interface IItemFormData {
   type: string;
@@ -29,7 +30,7 @@ interface IItemFormData {
 function CreateItem() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
-
+  const [isOpenPost, setIsOpenPost] = useState(false);
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   // toggle button values
   const [parking, setParking] = useState(false);
@@ -145,6 +146,28 @@ function CreateItem() {
     setIsLoading(false);
     console.log("invalid: ", data);
     toast.error("Form Valid Error!");
+  };
+
+  // 카카오 주소 검색 결과
+  const onCompletePost = (data: any) => {
+    let fullAddress = data.address;
+    let extraAddress = "";
+
+    if (data.addressType === "R") {
+      if (data.bname !== "") {
+        extraAddress += data.bname;
+      }
+      if (data.buildingName !== "") {
+        extraAddress +=
+          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+      }
+      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+    }
+
+    console.log(fullAddress); // e.g. '서울 성동구 왕십리로2길 20 (성수동1가)'
+
+    setValue("address", fullAddress);
+    setIsOpenPost(false);
   };
 
   console.log(watch());
@@ -320,8 +343,49 @@ function CreateItem() {
           </div>
 
           {/* Address */}
+          {/* 다음 주소 검색으로 변경 */}
           <p className="text-lg mt-6 font-semibold">Address</p>
-          <textarea
+          <div className="flex space-x-2">
+            <CustomInput
+              disabled
+              register={register("address", {
+                required: { value: true, message: "입력해주세요" },
+              })}
+            />
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpenPost((prev) => !prev);
+              }}
+              className=" whitespace-nowrap p-2 bg-blue-600 text-white text-[2px] font-medium rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue-800"
+            >
+              주소검색
+            </button>
+          </div>
+
+          {isOpenPost ? (
+            <div className=" fixed block top-[20%]  w-[400px] h-[400px] p-2">
+              <button
+                onClick={() => {
+                  setIsOpenPost(false);
+                }}
+                className=" whitespace-nowrap p-2 bg-blue-600 text-white text-[2px] font-medium rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue-800"
+              >
+                Close
+              </button>
+              <Postcode
+                className=" "
+                autoClose
+                onComplete={onCompletePost}
+                onClose={() => {
+                  setIsOpenPost(false);
+                }}
+              />
+            </div>
+          ) : null}
+
+          {/* <textarea
             placeholder="Address"
             {...register("address", {
               required: { value: true, message: "입력해주세요" },
@@ -329,7 +393,6 @@ function CreateItem() {
             className={`${textAreaCss}`}
           />
 
-          {/* Google Map, geo 활성화 시 출력 */}
           {geolocationEnabled && (
             <div className="flex space-x-6 justify-start mb-6">
               <div className="text-lg font-semibold">
@@ -358,10 +421,10 @@ function CreateItem() {
                 />
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Description */}
-          <p className="text-lg font-semibold">Description</p>
+          <p className="text-lg font-semibold mt-6">Description</p>
           <textarea
             placeholder="Description"
             {...register("description", {
