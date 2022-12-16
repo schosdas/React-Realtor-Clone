@@ -4,14 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { isLoadingState } from "../store/atom";
 import { toast } from "react-toastify";
-import {
-  buttonCss,
-  inputCss,
-  numInputCss,
-  textAreaCss,
-} from "../constants/cssCode";
+import { buttonCss, numInputCss, textAreaCss } from "../constants/cssCode";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
+import Geocode from "react-geocode";
 
 interface IItemFormData {
   type: string;
@@ -34,7 +30,7 @@ function CreateItem() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
 
-  const [geoLocationEnabled, setGeoLocationEnabled] = useState(false);
+  const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   // toggle button values
   const [parking, setParking] = useState(false);
   const [furnished, setFurnished] = useState(false);
@@ -70,17 +66,63 @@ function CreateItem() {
   // ==========
 
   // functions
-  const onValid = async ({ type }: IItemFormData) => {
+  const onValid = async (formData: IItemFormData) => {
     // 중복 클릭 방지
     if (isLoading) {
       return;
     }
 
+    setIsLoading(true);
+    /*
+    errors
+    1. discountedPrice가 regularPrice보다 클경우 
+    2. 이미지가 6장보다 많을 경우
+     */
+
+    if (formData.discountedPrice > formData.regularPrice) {
+      setIsLoading(false);
+      toast.error("Discounted price needs to be less than regular price");
+      return;
+    }
+
+    // 오브젝트 개수 구하는법
+    if (Object.keys(formData.images).length > 6) {
+      setIsLoading(false);
+      toast.error("maximum 6 images are allowed");
+      return;
+    }
+
+    // geolocation, google map api
+    if (geolocationEnabled) {
+      // react-geo 라이브러리 사용
+      try {
+        Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY!);
+        Geocode.setLanguage("en");
+        Geocode.setRegion("es");
+        Geocode.enableDebug();
+
+        const response = await Geocode.fromAddress(
+          "	82, Namwon-ro 469beon-gil, Wonju-si, Gangwon-do, Republic of Korea"
+        );
+        const { lat, lng } = response.results[0].geometry.location;
+        console.log(lat, lng);
+      } catch (error: any) {
+        setIsLoading(false);
+
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+
+        toast.error("Google api error");
+        return;
+      }
+    }
+
     try {
-      setIsLoading(true);
       // create firestore
     } catch (error: any) {
       setIsLoading(false);
+
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode, errorMessage);
@@ -287,7 +329,7 @@ function CreateItem() {
           />
 
           {/* Google Map, geo 활성화 시 출력 */}
-          {geoLocationEnabled && (
+          {geolocationEnabled && (
             <div className="flex space-x-6 justify-start mb-6">
               <div className="text-lg font-semibold">
                 <p>Latitude</p>

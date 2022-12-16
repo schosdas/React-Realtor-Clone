@@ -11,6 +11,7 @@ import { isLoadingState } from "../store/atom";
 import { useRecoilState } from "recoil";
 import { emailRegex, passwordRegex } from "../constants/regexp";
 import CustomButton from "../components/CustomButton";
+import CustomInput from "../components/CustomInput";
 
 interface IFormData {
   email: string;
@@ -100,12 +101,10 @@ w-[67%] lg:w-[50%] md:mb-import { type } from '../../node_modules/@remix-run/rou
           <form onSubmit={handleSubmit(onValid, inValid)}>
             {/* email */}
             <div className="mb-3">
-              <input
+              <CustomInput
                 placeholder="Email"
                 type="text"
-                className="w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500 "
-                {...register("email", {
-                  // 에러 메시지를 직접 입력 가능
+                register={register("email", {
                   required: { value: true, message: "이메일을 입력해주세요" },
                   // 정규식
                   pattern: {
@@ -113,7 +112,7 @@ w-[67%] lg:w-[50%] md:mb-import { type } from '../../node_modules/@remix-run/rou
                     message: "이메일을 확인해주세요",
                   },
                 })}
-              ></input>
+              />
               {/* error text */}
               <span className="w-full text-xs text-red-500">
                 {errors.email?.message}
@@ -122,11 +121,10 @@ w-[67%] lg:w-[50%] md:mb-import { type } from '../../node_modules/@remix-run/rou
 
             {/* password, 아이콘 배치를 위해 relative로 만들고 아이콘은 absolute */}
             <div className=" relative mb-3">
-              <input
+              <CustomInput
                 placeholder="Password"
                 type={showingPassword ? "text" : "password"} // 패스워드 보이기/감추기
-                className="w-full rounded-[4px] border p-3 hover:outline-none focus:outline-none hover:border-yellow-500 "
-                {...register("password", {
+                register={register("password", {
                   // 에러 메시지를 직접 입력 가능
                   required: { value: true, message: "비밀번호를 입력해주세요" },
                   // 정규식
@@ -136,7 +134,8 @@ w-[67%] lg:w-[50%] md:mb-import { type } from '../../node_modules/@remix-run/rou
                       "숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요",
                   },
                 })}
-              ></input>
+              />
+
               {/* hide toggle */}
               {showingPassword ? (
                 <AiFillEye
