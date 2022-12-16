@@ -11,6 +11,7 @@ import {
   textAreaCss,
 } from "../constants/cssCode";
 import CustomButton from "../components/CustomButton";
+import CustomInput from "../components/CustomInput";
 
 interface IItemFormData {
   type: string;
@@ -33,6 +34,7 @@ function CreateItem() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
 
+  const [geoLocationEnabled, setGeoLocationEnabled] = useState(false);
   // toggle button values
   const [parking, setParking] = useState(false);
   const [furnished, setFurnished] = useState(false);
@@ -153,11 +155,10 @@ function CreateItem() {
 
           {/* Name */}
           <p className="mt-6 text-lg font-semibold">Name</p>
-          <input
+          <CustomInput
             placeholder="Name"
             type="text"
-            className={`${inputCss}`}
-            {...register("name", {
+            register={register("name", {
               required: { value: true, message: "입력해주세요" },
               minLength: {
                 value: 6,
@@ -171,7 +172,7 @@ function CreateItem() {
           />
 
           {/* Beds & Baths */}
-          <div className="flex space-x-6 mb-6">
+          <div className="flex space-x-6 mt-6">
             <div>
               <p className="text-lg font-semibold">Beds</p>
               <input
@@ -284,6 +285,37 @@ function CreateItem() {
             })}
             className={`${textAreaCss}`}
           />
+
+          {/* Google Map, geo 활성화 시 출력 */}
+          {geoLocationEnabled && (
+            <div className="flex space-x-6 justify-start mb-6">
+              <div className="text-lg font-semibold">
+                <p>Latitude</p>
+                <input
+                  type="number"
+                  {...register("latitude", {
+                    required: { value: true, message: "입력해주세요" },
+                  })}
+                  min="-90"
+                  max="90"
+                  className={`${numInputCss}`}
+                />
+              </div>
+
+              <div className="">
+                <p className="text-lg font-semibold">Longitude</p>
+                <input
+                  type="number"
+                  {...register("longitude", {
+                    required: { value: true, message: "입력해주세요" },
+                  })}
+                  min="-180"
+                  max="180"
+                  className={`${numInputCss}`}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Description */}
           <p className="text-lg font-semibold">Description</p>

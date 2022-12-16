@@ -6,6 +6,7 @@ import { useRecoilValue } from "recoil";
 import { isLoadingState } from "./store/atom";
 import GridLoader from "react-spinners/GridLoader";
 import Loader from "./components/Loader";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 function App() {
   const isLoading = useRecoilValue(isLoadingState);
@@ -30,6 +31,9 @@ function App() {
 
       {/* spinner loading  */}
       {isLoading && <Loader />}
+
+      {/* react query 시각화를 위해 추가, 저장된 쿼리 데이터 확인 가능 */}
+      <ReactQueryDevtools initialIsOpen={true} />
     </>
   );
 }

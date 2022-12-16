@@ -26,6 +26,10 @@ function Router() {
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
+        <Route path="/create-item" element={<PrivateRoute />}>
+          <Route path="/create-item" element={<CreateItem />} />
+        </Route>
+
         {/* 로그인 상태에서 로그인 페이지로 못가도록 */}
         <Route path="/sign-in" element={<PrivateRoute />}>
           <Route path="/sign-in" element={<SignInPage />} />
@@ -36,7 +40,6 @@ function Router() {
 
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/offers" element={<Offers />} />
-        <Route path="/create-item" element={<CreateItem />} />
 
         {/* 잘못된 경로, 404 Not Found  */}
         <Route path="*" element={<NotFound />}></Route>

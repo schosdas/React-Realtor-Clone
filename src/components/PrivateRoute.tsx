@@ -15,11 +15,11 @@ function PrivateRoute() {
   }
 
   /* 
-  1. 로그인 X - 프로파일 페이지 접근 시 로그인 페이지로 이동 
+  1. 로그인 X - 로그인 필요한 페이지 접근 시 로그인 페이지로 이동 
   2. 로그인 O - 로그인/회원가입 페이지 접근 시 홈으로 이동
   */
 
-  if (currentLocation === "/profile") {
+  if (currentLocation === "/profile" || currentLocation === "/create-item") {
     // 로그인이 되어있다면 내부 route page, 안되어있다면 로그인 페이지로 이동
     return isLogin ? <Outlet /> : <Navigate to="/sign-in" />;
   }
