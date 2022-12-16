@@ -102,7 +102,8 @@ function CreateItem() {
         Geocode.enableDebug();
 
         const response = await Geocode.fromAddress(
-          "	82, Namwon-ro 469beon-gil, Wonju-si, Gangwon-do, Republic of Korea"
+          formData.address
+          // "	82, Namwon-ro 469beon-gil, Wonju-si, Gangwon-do, Republic of Korea"
         );
         const { lat, lng } = response.results[0].geometry.location;
         console.log(lat, lng);
