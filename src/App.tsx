@@ -24,6 +24,7 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover={false}
+        limit={1} // 한 번에 표시될 토스트 수
         theme="dark"
       />
 

@@ -10,6 +10,7 @@ import {
   numInputCss,
   textAreaCss,
 } from "../constants/cssCode";
+import CustomButton from "../components/CustomButton";
 
 interface IItemFormData {
   type: string;
@@ -56,7 +57,7 @@ function CreateItem() {
       address: "",
       description: "",
       offer: false,
-      regularPrice: 0,
+      regularPrice: 50,
       discountedPrice: 0,
       latitude: 0,
       longitude: 0,
@@ -67,13 +68,36 @@ function CreateItem() {
   // ==========
 
   // functions
-  const onValid = async ({ type }: IItemFormData) => {};
-  const inValid = (data: any) => {
+  const onValid = async ({ type }: IItemFormData) => {
     // 중복 클릭 방지
     if (isLoading) {
       return;
     }
 
+    try {
+      setIsLoading(true);
+      // create firestore
+    } catch (error: any) {
+      setIsLoading(false);
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+
+      toast.error("Failed create item");
+    }
+
+    // 완료 후 페이지 이동 등
+    setIsLoading(false);
+    toast.success("Create item was successful");
+    // navigate("/");
+  };
+
+  const inValid = (data: any) => {
+    // 중복 클릭 방지
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(false);
     console.log("invalid: ", data);
     toast.error("Form Valid Error!");
   };
@@ -97,7 +121,7 @@ function CreateItem() {
               }}
               {...(register("type"),
               {
-                required: { value: true, message: "선택해주세요" },
+                // required: { value: true, message: "선택해주세요" },
               })}
               className={`mr-6 ${buttonCss}  ${
                 getValues("type") === "rent"
@@ -115,7 +139,7 @@ function CreateItem() {
               }}
               {...(register("type"),
               {
-                required: { value: true, message: "타입을 선택해주세요" },
+                // required: { value: true, message: "타입을 선택해주세요" },
               })}
               className={`${buttonCss} ${
                 getValues("type") === "rent"
@@ -136,8 +160,8 @@ function CreateItem() {
             {...register("name", {
               required: { value: true, message: "입력해주세요" },
               minLength: {
-                value: 10,
-                message: "10~32 사이의 글자를 입력해주세요",
+                value: 6,
+                message: "6~32 사이의 글자를 입력해주세요",
               },
               maxLength: {
                 value: 32,
@@ -185,7 +209,7 @@ function CreateItem() {
                 setParking(true);
               }}
               {...register("parking", {
-                required: { value: true, message: "선택해주세요" },
+                // required: { value: true, message: "선택해주세요" },
               })}
               className={`mr-6 ${buttonCss} ${
                 // getValues("parking") === true
@@ -202,7 +226,7 @@ function CreateItem() {
                 setParking(false);
               }}
               {...register("parking", {
-                required: { value: true, message: "선택해주세요" },
+                // required: { value: true, message: "선택해주세요" },
               })}
               className={`${buttonCss} ${
                 // getValues("parking") === true
@@ -223,7 +247,7 @@ function CreateItem() {
                 setFurnished(true);
               }}
               {...register("furnished", {
-                required: { value: true, message: "선택해주세요" },
+                // required: { value: true, message: "선택해주세요" },
               })}
               className={`mr-6 ${buttonCss} ${
                 // getValues("furnished") === true
@@ -240,7 +264,7 @@ function CreateItem() {
                 setFurnished(false);
               }}
               {...register("furnished", {
-                required: { value: true, message: "선택해주세요" },
+                // required: { value: true, message: "선택해주세요" },
               })}
               className={`${buttonCss} ${
                 // getValues("furnished") === true
@@ -262,7 +286,7 @@ function CreateItem() {
           />
 
           {/* Description */}
-          <p className="text-lg mt-6 font-semibold">Description</p>
+          <p className="text-lg font-semibold">Description</p>
           <textarea
             placeholder="Description"
             {...register("description", {
@@ -272,7 +296,7 @@ function CreateItem() {
           />
 
           {/* Offer */}
-          <p className="text-lg mt-6 font-semibold">Offer</p>
+          <p className="text-lg font-semibold">Offer</p>
           <div className="flex">
             <button
               type="button"
@@ -281,7 +305,7 @@ function CreateItem() {
                 setOffer(true);
               }}
               {...register("offer", {
-                required: { value: true, message: "선택해주세요" },
+                // required: { value: true, message: "선택해주세요" },
               })}
               className={`mr-6 ${buttonCss} ${
                 // getValues("offer") === true
@@ -298,7 +322,7 @@ function CreateItem() {
                 setOffer(false);
               }}
               {...register("offer", {
-                required: { value: true, message: "선택해주세요" },
+                // required: { value: true, message: "선택해주세요" },
               })}
               className={`${buttonCss} ${
                 // getValues("offer") === true
@@ -310,7 +334,7 @@ function CreateItem() {
           </div>
 
           {/* Regular Price */}
-          <div className="flex items-center mb-6">
+          <div className="flex items-center mt-6">
             <div className="">
               <p className="text-lg font-semibold">Regular price</p>
               <div className="w-full flex  justify-center items-center space-x-6">
@@ -323,7 +347,7 @@ function CreateItem() {
                   max="400000000"
                   className={`${numInputCss}`}
                 />
-                {/* rent를 선택했을 경우 출력 */}
+                {/* rent를 선택했을 경우 옆에 출력 */}
                 {getValues("type") === "rent" && (
                   <div className="">
                     <p className="text-md w-full whitespace-nowrap">
@@ -335,11 +359,56 @@ function CreateItem() {
             </div>
           </div>
 
-          {/*  */}
+          {/* Discounted Price, offer을 선택했을때 출력 */}
+          {offer && (
+            <div className="flex items-center mt-6">
+              <div className="">
+                <p className="text-lg font-semibold">Discounted price</p>
+                <div className="flex w-full justify-center items-center space-x-6">
+                  <input
+                    type="number"
+                    {...register("discountedPrice", {
+                      required: { value: true, message: "입력해주세요" },
+                    })}
+                    min="50"
+                    max="400000000"
+                    required={offer}
+                    className="w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 text-center"
+                  />
+                  {getValues("type") === "rent" && (
+                    <div className="">
+                      <p className="text-md w-full whitespace-nowrap">
+                        $ / Month
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Image */}
+          <div className="mt-6">
+            <p className="text-lg font-semibold">Images</p>
+            <p className="text-gray-600">
+              The first image will be the cover (max 6)
+            </p>
+            {/* 불러온 file info를 images에 저장, 한 번에 여러 파일 선택 */}
+            <input
+              type="file"
+              {...register("images", {
+                required: { value: true, message: "입력해주세요" },
+              })}
+              accept=".jpg,.png,.jpeg" // image file
+              multiple
+              className="w-full px-3 py-1.5 text-xs text-gray-700 bg-white border border-gray-300 focus:bg-white focus:border-slate-600 rounded transition duration-150 ease-in-out "
+            />
+          </div>
 
           {/* Submit Button */}
+          <div className="my-10">
+            <CustomButton type="submit">create item</CustomButton>
+          </div>
         </form>
       </div>
     </section>
