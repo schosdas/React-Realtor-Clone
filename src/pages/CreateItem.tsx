@@ -9,6 +9,8 @@ import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 import Geocode from "react-geocode";
 import Postcode from "react-daum-postcode";
+import { ref } from "firebase/storage";
+import { imageUpload } from "../service/fireStorage";
 
 interface IItemFormData {
   type: string;
@@ -74,6 +76,7 @@ function CreateItem() {
     }
 
     setIsLoading(true);
+
     /*
     errors
     1. discountedPrice가 regularPrice보다 클경우 
@@ -86,8 +89,10 @@ function CreateItem() {
       return;
     }
 
-    // 오브젝트 개수 구하는법
-    if (Object.keys(formData.images).length > 6) {
+    // 이미지 오브젝트를 리스트로 변환
+    let images = Object.entries(formData.images);
+
+    if (images.length > 6) {
       setIsLoading(false);
       toast.error("maximum 6 images are allowed");
       return;
@@ -102,12 +107,34 @@ function CreateItem() {
         Geocode.setRegion("es");
         Geocode.enableDebug();
 
-        const response = await Geocode.fromAddress(
-          formData.address
-          // "	82, Namwon-ro 469beon-gil, Wonju-si, Gangwon-do, Republic of Korea"
-        );
+        const response = await Geocode.fromAddress(formData.address);
+        // 주소 위도/경도 변환
         const { lat, lng } = response.results[0].geometry.location;
+
         console.log(lat, lng);
+        setValue("latitude", lat);
+        setValue("longitude", lng);
+
+        // ========
+        // Storage & get urls
+        // async-await 사용을 위해 Promise로 만들기
+        const imgUrls = await Promise.all(
+          images.map((image) => imageUpload(image))
+        ).catch((error) => {
+          setIsLoading(false);
+          toast.error("Images not uploaded");
+          return;
+        });
+
+        console.log("urls: ", imgUrls);
+
+        // ========
+        // todo create firestore
+
+        // 완료 후 페이지 이동 등
+        setIsLoading(false);
+        toast.success("Create item was successful");
+        // navigate("/");
       } catch (error: any) {
         setIsLoading(false);
 
@@ -115,27 +142,10 @@ function CreateItem() {
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);
 
-        toast.error("Google api error");
+        toast.error("Address error");
         return;
       }
     }
-
-    try {
-      // create firestore
-    } catch (error: any) {
-      setIsLoading(false);
-
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
-
-      toast.error("Failed create item");
-    }
-
-    // 완료 후 페이지 이동 등
-    setIsLoading(false);
-    toast.success("Create item was successful");
-    // navigate("/");
   };
 
   const inValid = (data: any) => {
@@ -164,7 +174,7 @@ function CreateItem() {
       fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
 
-    console.log(fullAddress); // e.g. '서울 성동구 왕십리로2길 20 (성수동1가)'
+    console.log(`주소: ${fullAddress}`);
 
     setValue("address", fullAddress);
     setIsOpenPost(false);
@@ -364,6 +374,7 @@ function CreateItem() {
             </button>
           </div>
 
+          {/* 주소 검색 API 팝업 */}
           {isOpenPost ? (
             <div className=" fixed block top-[20%]  w-[400px] h-[400px] p-2">
               <button
@@ -374,6 +385,7 @@ function CreateItem() {
               >
                 Close
               </button>
+
               <Postcode
                 className=" "
                 autoClose
