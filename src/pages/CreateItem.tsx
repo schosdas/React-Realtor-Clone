@@ -108,17 +108,17 @@ function CreateItem() {
     // react-geo 라이브러리 사용
     try {
       Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY!);
-      Geocode.setLanguage("en");
+      Geocode.setLanguage("ko");
       Geocode.setRegion("es");
       Geocode.enableDebug();
 
       const response = await Geocode.fromAddress(formData.address);
       // 주소 위도/경도 변환
       const { lat, lng } = response.results[0].geometry.location;
-
       console.log(lat, lng);
-      setValue("latitude", lat);
-      setValue("longitude", lng);
+
+      // setValue("latitude", lat);
+      // setValue("longitude", lng);
 
       // ========
       // Storage & get urls
@@ -138,22 +138,23 @@ function CreateItem() {
       // todo create firestore
       // 입력한 폼과 download urls을 업로드하기
       const itemModel = {
-        // 폼데이터를 그대로 가져오고 이미지값 변경 및 추가
+        // 폼데이터를 그대로 가져오고 이미지값 변경 및 추가 등
         ...formData,
+        latitude: lat,
+        longitude: lng,
         images: imgUrls,
         createDate: serverTimestamp(),
       };
 
-      // console.log(itemModel);
+      console.log("itemModel: ", itemModel);
 
       // 특정 문서 id를 지정할 때는 setDoc, 자동으로 새로 생성할 때는 addDoc
       const docRef = await addDoc(collection(db, COL_ITEMS), itemModel);
-      // const docRef = await addDoc(collection(db, COL_ITEMS), { a: "aaa" });
 
-      // 완료 후 페이지 이동 등
+      // 완료 후 생성된 디테일 페이지 이동 등
       setIsLoading(false);
       toast.success("Create item was successful");
-      navigate("/");
+      navigate(`/category/${itemModel.type}/${docRef.id}`);
     } catch (error: any) {
       setIsLoading(false);
 
