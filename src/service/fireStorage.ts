@@ -8,7 +8,7 @@ export const imageUpload = async (image: any) => {
   return new Promise((resolve, reject) => {
     // 경로 설정
     const filename = `${auth.currentUser?.uid}_${image.name}_${uuid()}`;
-    const storageRef = ref(storage, `images/${filename}`);
+    const storageRef = ref(storage, filename);
     const uploadTask = uploadBytesResumable(storageRef, image);
 
     // Register three observers:
@@ -28,7 +28,7 @@ export const imageUpload = async (image: any) => {
             console.log("Upload is paused");
             break;
           case "running":
-            console.log("Upload is uploading");
+            console.log("Upload is running");
             break;
         }
       },

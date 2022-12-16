@@ -9,8 +9,15 @@ import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 import Geocode from "react-geocode";
 import Postcode from "react-daum-postcode";
-import { ref } from "firebase/storage";
 import { imageUpload } from "../service/fireStorage";
+import {
+  addDoc,
+  setDoc,
+  serverTimestamp,
+  collection,
+} from "firebase/firestore";
+import { db } from "../firebase";
+import { COL_ITEMS, COL_USERS } from "../constants/key";
 
 interface IItemFormData {
   type: string;
@@ -33,7 +40,6 @@ function CreateItem() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
   const [isOpenPost, setIsOpenPost] = useState(false);
-  const [geolocationEnabled, setGeolocationEnabled] = useState(true);
   // toggle button values
   const [parking, setParking] = useState(false);
   const [furnished, setFurnished] = useState(false);
@@ -90,61 +96,73 @@ function CreateItem() {
     }
 
     // 이미지 오브젝트를 리스트로 변환
-    let images = Object.entries(formData.images);
+    let imagesLength = Object.entries(formData.images).length;
 
-    if (images.length > 6) {
+    if (imagesLength > 6) {
       setIsLoading(false);
       toast.error("maximum 6 images are allowed");
       return;
     }
 
     // geolocation, google map api
-    if (geolocationEnabled) {
-      // react-geo 라이브러리 사용
-      try {
-        Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY!);
-        Geocode.setLanguage("en");
-        Geocode.setRegion("es");
-        Geocode.enableDebug();
+    // react-geo 라이브러리 사용
+    try {
+      Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY!);
+      Geocode.setLanguage("en");
+      Geocode.setRegion("es");
+      Geocode.enableDebug();
 
-        const response = await Geocode.fromAddress(formData.address);
-        // 주소 위도/경도 변환
-        const { lat, lng } = response.results[0].geometry.location;
+      const response = await Geocode.fromAddress(formData.address);
+      // 주소 위도/경도 변환
+      const { lat, lng } = response.results[0].geometry.location;
 
-        console.log(lat, lng);
-        setValue("latitude", lat);
-        setValue("longitude", lng);
+      console.log(lat, lng);
+      setValue("latitude", lat);
+      setValue("longitude", lng);
 
-        // ========
-        // Storage & get urls
-        // async-await 사용을 위해 Promise로 만들기
-        const imgUrls = await Promise.all(
-          images.map((image) => imageUpload(image))
-        ).catch((error) => {
-          setIsLoading(false);
-          toast.error("Images not uploaded");
-          return;
-        });
-
-        console.log("urls: ", imgUrls);
-
-        // ========
-        // todo create firestore
-
-        // 완료 후 페이지 이동 등
+      // ========
+      // Storage & get urls
+      // async-await 사용을 위해 Promise로 만들기?
+      // images 타입 에러 때문에 as [] 추가!
+      const imgUrls = await Promise.all(
+        [...(formData.images as [])].map((image) => imageUpload(image))
+      ).catch((error) => {
         setIsLoading(false);
-        toast.success("Create item was successful");
-        // navigate("/");
-      } catch (error: any) {
-        setIsLoading(false);
-
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-
-        toast.error("Address error");
+        toast.error("Images not uploaded");
         return;
-      }
+      });
+
+      console.log("urls: ", imgUrls);
+
+      // ========
+      // todo create firestore
+      // 입력한 폼과 download urls을 업로드하기
+      const itemModel = {
+        // 폼데이터를 그대로 가져오고 이미지값 변경 및 추가
+        ...formData,
+        images: imgUrls,
+        createDate: serverTimestamp(),
+      };
+
+      // console.log(itemModel);
+
+      // 특정 문서 id를 지정할 때는 setDoc, 자동으로 새로 생성할 때는 addDoc
+      const docRef = await addDoc(collection(db, COL_ITEMS), itemModel);
+      // const docRef = await addDoc(collection(db, COL_ITEMS), { a: "aaa" });
+
+      // 완료 후 페이지 이동 등
+      setIsLoading(false);
+      toast.success("Create item was successful");
+      navigate("/");
+    } catch (error: any) {
+      setIsLoading(false);
+
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+
+      toast.error("Create error");
+      return;
     }
   };
 
@@ -397,44 +415,6 @@ function CreateItem() {
             </div>
           ) : null}
 
-          {/* <textarea
-            placeholder="Address"
-            {...register("address", {
-              required: { value: true, message: "입력해주세요" },
-            })}
-            className={`${textAreaCss}`}
-          />
-
-          {geolocationEnabled && (
-            <div className="flex space-x-6 justify-start mb-6">
-              <div className="text-lg font-semibold">
-                <p>Latitude</p>
-                <input
-                  type="number"
-                  {...register("latitude", {
-                    required: { value: true, message: "입력해주세요" },
-                  })}
-                  min="-90"
-                  max="90"
-                  className={`${numInputCss}`}
-                />
-              </div>
-
-              <div className="">
-                <p className="text-lg font-semibold">Longitude</p>
-                <input
-                  type="number"
-                  {...register("longitude", {
-                    required: { value: true, message: "입력해주세요" },
-                  })}
-                  min="-180"
-                  max="180"
-                  className={`${numInputCss}`}
-                />
-              </div>
-            </div>
-          )} */}
-
           {/* Description */}
           <p className="text-lg font-semibold mt-6">Description</p>
           <textarea
@@ -546,11 +526,11 @@ function CreateItem() {
             {/* 불러온 file info를 images에 저장, 한 번에 여러 파일 선택 */}
             <input
               type="file"
+              accept=".jpg,.png,.jpeg" // image file
+              multiple
               {...register("images", {
                 required: { value: true, message: "입력해주세요" },
               })}
-              accept=".jpg,.png,.jpeg" // image file
-              multiple
               className="w-full px-3 py-1.5 text-xs text-gray-700 bg-white border border-gray-300 focus:bg-white focus:border-slate-600 rounded transition duration-150 ease-in-out "
             />
           </div>

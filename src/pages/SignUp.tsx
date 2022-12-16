@@ -66,7 +66,10 @@ function SignUp() {
       };
 
       // create user firestore (doc의 파라미터: firestore, col name, doc name)
-      await setDoc(doc(db, COL_USERS, user.uid), userModel);
+      // 특정 문서 id를 지정할 때는 setDoc, 자동으로 새로 생성할 때는 addDoc
+      const docRef = doc(db, COL_USERS, user.uid);
+      await setDoc(docRef, userModel);
+
       // 완료 후 페이지 이동 등
       setIsLoading(false);
       toast.success("Sign up was successful");
