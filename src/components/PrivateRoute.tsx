@@ -2,16 +2,21 @@ import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useAuthStatus from "../hooks/useAuthStatus";
 import GridLoader from "react-spinners/GridLoader";
+import { useRecoilState } from "recoil";
+import { isLoadingState } from "../store/atom";
+import Loader from "./Loader";
 
 // Router.tsx에서 사용
 function PrivateRoute() {
   const { isLogin, checking } = useAuthStatus();
   const location = useLocation();
   const currentLocation = location.pathname;
+  const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
 
   // 로그인 체크 완료 전에 return 되는 문제, 로딩 동안 대기하도록
   if (checking) {
-    return <GridLoader color="#36d7b7" className=" fixed top-1/2 left-1/2" />;
+    // return <GridLoader color="#36d7b7" className=" fixed top-1/2 left-1/2" />;
+    return <Loader />;
   }
 
   /* 

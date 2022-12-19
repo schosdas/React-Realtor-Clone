@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "../components/Header";
 import PrivateRoute from "../components/PrivateRoute";
-import CreateItem from "../pages/CreateItem";
+import CreatePost from "../pages/CreatePost";
 import ForgetPassword from "../pages/ForgetPassword";
 import HomePage from "../pages/Home";
 import NotFound from "../pages/NotFound";
@@ -27,7 +27,7 @@ function Router() {
         </Route>
 
         <Route path="/create-item" element={<PrivateRoute />}>
-          <Route path="/create-item" element={<CreateItem />} />
+          <Route path="/create-item" element={<CreatePost />} />
         </Route>
 
         {/* 로그인 상태에서 로그인 페이지로 못가도록 */}

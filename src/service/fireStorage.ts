@@ -28,7 +28,7 @@ export const imageUpload = async (image: any) => {
             console.log("Upload is paused");
             break;
           case "running":
-            console.log("Upload is running");
+            // console.log("Upload is running");
             break;
         }
       },

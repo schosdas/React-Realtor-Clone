@@ -9,17 +9,37 @@ import CustomButton from "../components/CustomButton";
 import { auth, db } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
-import { COL_USERS, DOC_NICKNAME } from "../constants/key";
+import {
+  COL_POSTS,
+  COL_USERS,
+  DOC_CREATEDATE,
+  DOC_UID,
+} from "../constants/key";
 import { FcHome } from "react-icons/fc";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  DocumentData,
+} from "firebase/firestore";
+import Post from "../components/Post";
 
 interface IFormData {
   nickname: string;
   email: string;
 }
 
+interface IPost {
+  id: string;
+  data: DocumentData;
+}
+
 function Profile() {
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [posts, setPosts] = useState<IPost[]>([]);
   const navigate = useNavigate();
 
   // react-hook-form
@@ -31,13 +51,43 @@ function Profile() {
     formState: { errors },
   } = useForm<IFormData>();
 
-  // setValue를 사용하여 유저 정보를 input value에 입력
+  // setValue를 사용하여 유저 정보를 input value에 입력, my lists 불러오기
   useEffect(() => {
+    // get nickname
     setValue("nickname", auth.currentUser?.displayName ?? "");
     setValue("email", auth.currentUser?.email ?? "");
-  }, []);
+    // fetch user posts
+    fetchUserPosts();
+  }, [auth.currentUser?.uid]);
 
-  const onValid = async ({ nickname, email }: IFormData) => {
+  const fetchUserPosts = async () => {
+    setIsLoading(true);
+
+    // search query, 시간 정렬 및 새로운 데이터가 위로 오도록 역정렬
+    const postRef = collection(db, COL_POSTS);
+    const q = query(
+      postRef,
+      where(DOC_UID, "==", auth.currentUser?.uid),
+      orderBy(DOC_CREATEDATE, "desc")
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    // 각각의 post doc를 리스트에 저장
+    let postList: any = [];
+    querySnapshot.forEach((doc) => {
+      return postList.push({
+        id: doc.id,
+        data: doc.data,
+      });
+    });
+
+    setPosts(postList);
+    setIsLoading(false);
+    console.log(posts);
+  };
+
+  const onValid = async ({ nickname }: IFormData) => {
     // 중복 클릭 방지
     if (isLoading) {
       return;
@@ -61,7 +111,7 @@ function Profile() {
       // firestore update
       const docRef = doc(db, COL_USERS, auth.currentUser!.uid);
       await updateDoc(docRef, {
-        DOC_NICKNAME: nickname,
+        nickname: nickname,
       });
 
       // 완료 후
@@ -115,7 +165,7 @@ function Profile() {
         displayName: nickname,
       });
 
-      // firestore update
+      // todo firestore update
 
       // 완료 후
       setIsLoading(false);
@@ -217,7 +267,18 @@ function Profile() {
         </div>
       </section>
 
-      {/* my item lists */}
+      {/* my post lists */}
+      {/* fetch 완료 후 출력, 화면 사이즈에 따라 리스트 개수 변경 */}
+      {!isLoading && posts.length > 0 ? (
+        <section className=" max-w-6xl mx-auto">
+          <h2 className=" text-2xl text-center font-semibold">My List</h2>
+          <ul>
+            {posts.map((post) => (
+              <Post id={post.id} data={post.data} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </>
   );
 }

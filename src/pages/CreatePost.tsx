@@ -16,10 +16,10 @@ import {
   serverTimestamp,
   collection,
 } from "firebase/firestore";
-import { db } from "../firebase";
-import { COL_ITEMS, COL_USERS } from "../constants/key";
+import { auth, db } from "../firebase";
+import { COL_POSTS, COL_USERS } from "../constants/key";
 
-interface IItemFormData {
+interface IPostFormData {
   type: string;
   name: string;
   bedrooms: number;
@@ -36,7 +36,7 @@ interface IItemFormData {
   images: object;
 }
 
-function CreateItem() {
+function CreatePost() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
   const [isOpenPost, setIsOpenPost] = useState(false);
@@ -52,7 +52,7 @@ function CreateItem() {
     getValues,
     watch,
     formState: { errors },
-  } = useForm<IItemFormData>({
+  } = useForm<IPostFormData>({
     // 초기값 설정
     defaultValues: {
       type: "rent",
@@ -75,7 +75,7 @@ function CreateItem() {
   // ==========
 
   // functions
-  const onValid = async (formData: IItemFormData) => {
+  const onValid = async (formData: IPostFormData) => {
     // 중복 클릭 방지
     if (isLoading) {
       return;
@@ -137,24 +137,25 @@ function CreateItem() {
       // ========
       // todo create firestore
       // 입력한 폼과 download urls을 업로드하기
-      const itemModel = {
-        // 폼데이터를 그대로 가져오고 이미지값 변경 및 추가 등
+      const postModel = {
+        // 폼데이터를 그대로 가져오고 변경될 값 및 새로 추가
         ...formData,
+        uid: auth.currentUser?.uid,
         latitude: lat,
         longitude: lng,
         images: imgUrls,
         createDate: serverTimestamp(),
       };
 
-      console.log("itemModel: ", itemModel);
+      console.log("postModel: ", postModel);
 
       // 특정 문서 id를 지정할 때는 setDoc, 자동으로 새로 생성할 때는 addDoc
-      const docRef = await addDoc(collection(db, COL_ITEMS), itemModel);
+      const docRef = await addDoc(collection(db, COL_POSTS), postModel);
 
       // 완료 후 생성된 디테일 페이지 이동 등
       setIsLoading(false);
-      toast.success("Create item was successful");
-      navigate(`/category/${itemModel.type}/${docRef.id}`);
+      toast.success("Create post was successful");
+      navigate(`/category/${postModel.type}/${docRef.id}`);
     } catch (error: any) {
       setIsLoading(false);
 
@@ -205,7 +206,7 @@ function CreateItem() {
 
   return (
     <section className=" max-w-md mx-auto">
-      <h1 className="text-3xl font-bold text-center mt-6">Create a Item</h1>
+      <h1 className="text-3xl font-bold text-center mt-6">Create a Post</h1>
       <div>
         <form onSubmit={handleSubmit(onValid, inValid)}>
           {/* Type */}
@@ -538,7 +539,7 @@ function CreateItem() {
 
           {/* Submit Button */}
           <div className="my-10">
-            <CustomButton type="submit">create item</CustomButton>
+            <CustomButton type="submit">create post</CustomButton>
           </div>
         </form>
       </div>
@@ -546,4 +547,4 @@ function CreateItem() {
   );
 }
 
-export default CreateItem;
+export default CreatePost;
