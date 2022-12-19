@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { toast } from "react-toastify";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 import { isLoadingState } from "../store/atom";
 import { nicknameRegex } from "../constants/regexp";
@@ -180,6 +180,26 @@ function Profile() {
     }
   };
 
+  // 포스트 편집, 삭제
+  const onEdit = (postId: string) => {
+    // 편집 페이지 이동
+    navigate(`/edit-post/${postId}`);
+  };
+
+  const onDelete = async (postId: string) => {
+    // window popup
+    if (window.confirm("Are you sure delete this post?")) {
+      // firestore doc delete
+      const postRef = doc(db, COL_POSTS, postId);
+      await deleteDoc(postRef);
+      // after delete, updating post list
+      // id를 비교하여 삭제된 포스트 외 나머지 리스트 저장
+      const updatedPosts = posts.filter((post) => post.id !== postId);
+      setPosts(updatedPosts);
+      toast.success("Successful delete post");
+    }
+  };
+
   return (
     <>
       <section className=" max-w-6xl mx-auto">
@@ -274,7 +294,13 @@ function Profile() {
           {/* grid 생성 방법 */}
           <ul className=" grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 my-6 ">
             {posts.map((post) => (
-              <Post key={post.id} id={post.id} data={post.data} />
+              <Post
+                key={post.id}
+                id={post.id}
+                data={post.data}
+                onDelete={() => onDelete(post.id)}
+                onEdit={() => onEdit(post.id)}
+              />
             ))}
           </ul>
         </section>

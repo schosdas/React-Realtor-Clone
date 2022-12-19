@@ -3,13 +3,18 @@ import { DocumentData } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Moment from "react-moment";
 import { MdLocationOn } from "react-icons/md";
+import { FaTrash } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
 
 interface IProps {
   id: string;
   data: DocumentData; // any
+  //  파라미터있는 함수를 props로 받는 방법
+  onEdit: (value: string) => void;
+  onDelete: (value: string) => void;
 }
 
-function Post({ id, data }: IProps) {
+function Post({ id, data, onEdit, onDelete }: IProps) {
   return (
     <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
       {/* detail page 이동, 첫번째 이미지 및 카드 컴포넌트 형태로 */}
@@ -25,7 +30,7 @@ function Post({ id, data }: IProps) {
         {/* absolute로 위치 조정을 위해 부모 태그를 relative로 만들기 */}
         <Moment
           fromNow
-          className="absolute top-2 left-2 bg-[#3377cc] text-white uppercase text-xs font-semibold rounded-md px-2 py-1 shadow-lg"
+          className="absolute top-2 left-2 bg-[#3377cc] text-white uppercase text-[10px] font-semibold rounded-md px-2 py-1 shadow-lg"
         >
           {data.createDate?.toDate()}
         </Moment>
@@ -70,6 +75,20 @@ function Post({ id, data }: IProps) {
           </div>
         </div>
       </Link>
+
+      {/* 편집 및 삭제 아이콘 */}
+      {onDelete && (
+        <FaTrash
+          className="absolute bottom-2 right-2 h-[14px] cursor-pointer text-red-500"
+          onClick={() => onDelete(data.id)}
+        />
+      )}
+      {onEdit && (
+        <MdEdit
+          className="absolute bottom-2 right-7 h-4 cursor-pointer "
+          onClick={() => onEdit(data.id)}
+        />
+      )}
     </li>
   );
 }
