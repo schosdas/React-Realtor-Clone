@@ -33,7 +33,7 @@ interface IFormData {
 
 interface IPost {
   id: string;
-  data: DocumentData;
+  data: DocumentData; // any
 }
 
 function Profile() {
@@ -78,13 +78,12 @@ function Profile() {
     querySnapshot.forEach((doc) => {
       return postList.push({
         id: doc.id,
-        data: doc.data,
+        data: doc.data(),
       });
     });
 
     setPosts(postList);
     setIsLoading(false);
-    console.log(posts);
   };
 
   const onValid = async ({ nickname }: IFormData) => {
@@ -268,13 +267,14 @@ function Profile() {
       </section>
 
       {/* my post lists */}
-      {/* fetch 완료 후 출력, 화면 사이즈에 따라 리스트 개수 변경 */}
+      {/* fetch 완료 후 출력, 화면 사이즈에 따라 grid 개수 변경 */}
       {!isLoading && posts.length > 0 ? (
-        <section className=" max-w-6xl mx-auto">
+        <section className=" max-w-6xl mx-auto mt-6 px-3">
           <h2 className=" text-2xl text-center font-semibold">My List</h2>
-          <ul>
+          {/* grid 생성 방법 */}
+          <ul className=" grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 my-6 ">
             {posts.map((post) => (
-              <Post id={post.id} data={post.data} />
+              <Post key={post.id} id={post.id} data={post.data} />
             ))}
           </ul>
         </section>
