@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import EditPost from "../components/EditPost";
+import EditPost from "../pages/EditPost";
 import Header from "../components/Header";
 import PrivateRoute from "../components/PrivateRoute";
 import CreatePost from "../pages/CreatePost";

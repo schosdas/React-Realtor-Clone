@@ -271,7 +271,7 @@ function Profile() {
             </div>
           </form>
 
-          {/* Item Create Button  */}
+          {/* Post Create Button  */}
           <div>
             <CustomButton type="submit">
               <Link
