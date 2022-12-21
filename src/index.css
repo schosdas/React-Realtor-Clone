@@ -6,3 +6,13 @@
 body {
   background-color: rgb(240, 253, 244);
 }
+
+/* swiper의 색상 변경 옵션이 없기 때문에 따로 설정 */
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  color: #a8dadc;
+}
+
+.swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
+  background: #a8dadc !important;
+}
