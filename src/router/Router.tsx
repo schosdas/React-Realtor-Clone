@@ -11,6 +11,7 @@ import Offers from "../pages/Offers";
 import ProfilePage from "../pages/Profile";
 import SignInPage from "../pages/SignIn";
 import SignUpPage from "../pages/SignUp";
+import DetailPost from "../pages/DetailPost";
 
 function Router() {
   return (
@@ -45,6 +46,7 @@ function Router() {
 
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/offers" element={<Offers />} />
+        <Route path="/category/:category/:postId" element={<DetailPost />} />
 
         {/* 잘못된 경로, 404 Not Found  */}
         <Route path="*" element={<NotFound />}></Route>

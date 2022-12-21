@@ -19,7 +19,7 @@ import {
   DocumentData,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { COL_POSTS, COL_USERS, DOC_UID } from "../constants/key";
+import { COL_POSTS } from "../constants/key";
 
 interface IPostFormData {
   type: string;
@@ -93,7 +93,6 @@ function EditPost() {
     const postRef = doc(db, COL_POSTS, postId!);
     const snapshot = await getDoc(postRef);
 
-    // 다른 사용자가 url을 통해 직접 접근하는것을 막기
     if (!snapshot.exists()) {
       setIsLoading(false);
       return toast.error("Failed get post data");
@@ -104,6 +103,7 @@ function EditPost() {
     const postData = snapshot.data();
     // console.log("post data: ", postData);
 
+    // 다른 사용자가 url을 통해 접근하는것 막기
     if (postData && postData.uid !== auth.currentUser?.uid) {
       setIsLoading(false);
       toast.error("You can't edit this listing");
