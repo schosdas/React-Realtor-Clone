@@ -24,16 +24,13 @@ function PrivateRoute() {
   2. 로그인 O - 로그인/회원가입 페이지 접근 시 홈으로 이동
   */
 
-  if (currentLocation === "/profile" || currentLocation === "/create-item") {
-    // 로그인이 되어있다면 내부 route page, 안되어있다면 로그인 페이지로 이동
-    return isLogin ? <Outlet /> : <Navigate to="/sign-in" />;
-  }
   // 로그인 상태일 때 로그인/회원가입 페이지 접근 금지
-  else if (currentLocation === "/sign-in" || currentLocation === "/sign-up") {
+  if (currentLocation === "/sign-in" || currentLocation === "/sign-up") {
     return isLogin ? <Navigate to="/" /> : <Outlet />;
-  } else {
-    return <Navigate to="/" />;
   }
+
+  // 로그인이 되어있다면 내부 route page, 안되어있다면 로그인 페이지로 이동
+  return isLogin ? <Outlet /> : <Navigate to="/sign-in" />;
 }
 
 export default PrivateRoute;

@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import EditPost from "../components/EditPost";
 import Header from "../components/Header";
 import PrivateRoute from "../components/PrivateRoute";
 import CreatePost from "../pages/CreatePost";
@@ -26,8 +27,12 @@ function Router() {
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
-        <Route path="/create-item" element={<PrivateRoute />}>
-          <Route path="/create-item" element={<CreatePost />} />
+        <Route path="/create-post" element={<PrivateRoute />}>
+          <Route path="/create-post" element={<CreatePost />} />
+        </Route>
+
+        <Route path="/edit-post/:postId" element={<PrivateRoute />}>
+          <Route path="/edit-post/:postId" element={<EditPost />} />
         </Route>
 
         {/* 로그인 상태에서 로그인 페이지로 못가도록 */}

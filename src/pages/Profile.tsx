@@ -196,7 +196,7 @@ function Profile() {
       // id를 비교하여 삭제된 포스트 외 나머지 리스트 저장
       const updatedPosts = posts.filter((post) => post.id !== postId);
       setPosts(updatedPosts);
-      toast.success("Successful delete post");
+      toast.success("Successfully delete post");
     }
   };
 
@@ -275,7 +275,7 @@ function Profile() {
           <div>
             <CustomButton type="submit">
               <Link
-                to="/create-item"
+                to="/create-post"
                 className="flex justify-center items-center"
               >
                 <FcHome className="mr-3 text-3xl bg-red-200 border-2 rounded-full p-1" />{" "}
