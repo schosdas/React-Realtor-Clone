@@ -11,13 +11,12 @@ import Geocode from "react-geocode";
 import Postcode from "react-daum-postcode";
 import { imageUpload } from "../service/fireStorage";
 import {
-  addDoc,
-  setDoc,
   serverTimestamp,
   collection,
-  DocumentData,
   doc,
   getDoc,
+  updateDoc,
+  DocumentData,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { COL_POSTS, COL_USERS, DOC_UID } from "../constants/key";
@@ -44,6 +43,7 @@ function EditPost() {
   const params = useParams();
 
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
+  const [postData, setPostData] = useState<DocumentData>();
   const [isOpenPost, setIsOpenPost] = useState(false);
   // toggle button values
   const [parking, setParking] = useState(false);
@@ -79,7 +79,7 @@ function EditPost() {
 
   // ==========
 
-  // todo 선택된 포스트의 데이터를 불러와 form 채우기
+  // 선택된 포스트의 데이터를 불러와 form 채우기
   useEffect(() => {
     fetchPostData();
   }, []);
@@ -93,12 +93,22 @@ function EditPost() {
     const postRef = doc(db, COL_POSTS, postId!);
     const snapshot = await getDoc(postRef);
 
+    // 다른 사용자가 url을 통해 직접 접근하는것을 막기
     if (!snapshot.exists()) {
+      setIsLoading(false);
       return toast.error("Failed get post data");
     }
 
+    // useState 바로 적용안되는 문제 있음
+    setPostData((prev) => snapshot.data());
     const postData = snapshot.data();
     // console.log("post data: ", postData);
+
+    if (postData && postData.uid !== auth.currentUser?.uid) {
+      setIsLoading(false);
+      toast.error("You can't edit this listing");
+      return navigate("/");
+    }
 
     // form 저장
     setValue("type", postData!.type);
@@ -197,13 +207,13 @@ function EditPost() {
 
       console.log("postModel: ", postModel);
 
-      // 특정 문서 id를 지정할 때는 setDoc, 자동으로 새로 생성할 때는 addDoc
-      const docRef = await addDoc(collection(db, COL_POSTS), postModel);
+      const docRef = doc(db, COL_POSTS, params.postId!);
+      await updateDoc(docRef, postModel);
 
-      // 완료 후 생성된 디테일 페이지 이동 등
+      // 완료 후 페이지 이동 등
       setIsLoading(false);
       toast.success("Edit post was successful");
-      navigate(`/category/${postModel.type}/${docRef.id}`);
+      navigate("/profile");
     } catch (error: any) {
       setIsLoading(false);
 
