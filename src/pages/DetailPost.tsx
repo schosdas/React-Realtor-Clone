@@ -15,6 +15,7 @@ import {
   FaChair,
 } from "react-icons/fa";
 import ContactButton from "../components/ContactButton";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 function DetailPost() {
   const navigate = useNavigate();
@@ -137,7 +138,22 @@ function DetailPost() {
         </div>
 
         {/* google map */}
-        <div className="w-full bg-blue-300   md:h-[400px] h-[200px] z-10 overflow-x-hidden mt-6 md:mt-0 md:ml-2"></div>
+        <div className="w-full md:h-[400px] h-[200px] z-10 overflow-x-hidden md:mt-0  md:ml-2 mt-6 ">
+          <MapContainer
+            center={[51.505, -0.09]}
+            zoom={13}
+            scrollWheelZoom={false}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={[51.505, -0.09]}>
+              <Popup>{postData.address}</Popup>
+            </Marker>
+          </MapContainer>
+        </div>
       </main>
     </>
   );
