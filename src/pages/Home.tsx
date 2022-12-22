@@ -1,7 +1,15 @@
 import React from "react";
+import HomeSlider from "../components/HomeSlider";
 
 function Home() {
-  return <div className="">Home</div>;
+  return (
+    <>
+      <header>
+        <HomeSlider />
+      </header>
+      <main>Home</main>
+    </>
+  );
 }
 
 export default Home;

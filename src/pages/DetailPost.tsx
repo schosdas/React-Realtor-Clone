@@ -140,16 +140,16 @@ function DetailPost() {
         {/* google map */}
         <div className="w-full md:h-[400px] h-[200px] z-10 overflow-x-hidden md:mt-0  md:ml-2 mt-6 ">
           <MapContainer
-            center={[51.505, -0.09]}
+            center={[postData.latitude, postData.longitude]}
             zoom={13}
             scrollWheelZoom={false}
-            style={{ height: "100%", width: "100%" }}
+            className="h-full w-full"
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={[51.505, -0.09]}>
+            <Marker position={[postData.latitude, postData.longitude]}>
               <Popup>{postData.address}</Popup>
             </Marker>
           </MapContainer>

@@ -2,15 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { isLoadingState } from "../store/atom";
-import { toast } from "react-toastify";
 import {
-  doc,
-  getDoc,
   DocumentData,
   collection,
   orderBy,
   query,
   getDocs,
+  limit,
 } from "firebase/firestore";
 import { COL_POSTS, DOC_CREATEDATE } from "../constants/key";
 import { db } from "../firebase";
@@ -30,7 +28,6 @@ interface IPost {
 }
 
 function HomeSlider() {
-  const params = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
   const [posts, setPosts] = useState<IPost[]>([]);
@@ -42,9 +39,9 @@ function HomeSlider() {
   const fetchPosts = async () => {
     setIsLoading(true);
 
-    // search query, 시간 정렬 및 새로운 데이터가 위로 오도록 역정렬
+    // 최신 포스트 최대 5개 가져오기
     const postRef = collection(db, COL_POSTS);
-    const q = query(postRef, orderBy(DOC_CREATEDATE, "desc"));
+    const q = query(postRef, orderBy(DOC_CREATEDATE, "desc"), limit(5));
 
     const querySnapshot = await getDocs(q);
 
@@ -60,8 +57,6 @@ function HomeSlider() {
     setPosts(postList);
     setIsLoading(false);
   };
-
-  //   setPosts(postList);
 
   SwiperCore.use([Autoplay, Navigation, Pagination]);
 
