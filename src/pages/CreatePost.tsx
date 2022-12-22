@@ -222,7 +222,8 @@ function CreatePost() {
             <button
               type="button"
               onClick={() => {
-                setValue("type", "sell");
+                // 강의와 같이 "sale" 로 설정
+                setValue("type", "sale");
               }}
               {...(register("type"),
               {

@@ -10,8 +10,8 @@ interface IProps {
   id: string;
   data: DocumentData; // any
   //  파라미터있는 함수를 props로 받는 방법
-  onEdit: (value: string) => void;
-  onDelete: (value: string) => void;
+  onEdit?: (value: string) => void;
+  onDelete?: (value: string) => void;
 }
 
 function Post({ id, data, onEdit, onDelete }: IProps) {
