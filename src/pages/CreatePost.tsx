@@ -89,7 +89,8 @@ function CreatePost() {
     2. 이미지가 6장보다 많을 경우
      */
 
-    if (formData.discountedPrice > formData.regularPrice) {
+    // count값이 number타입이 아닐 수도 있기 때문에 number 타입으로 적용하기
+    if (+formData.discountedPrice > +formData.regularPrice) {
       setIsLoading(false);
       toast.error("Discounted price needs to be less than regular price");
       return;
@@ -140,6 +141,12 @@ function CreatePost() {
       const postModel = {
         // 폼데이터를 그대로 가져오고 변경될 값 및 새로 추가
         ...formData,
+        // ! bool값이 string으로 저장되는 문제있음, string 일 시 boolean 타입으로 변환해주기
+        furnished:
+          typeof furnished === "string" ? JSON.parse(furnished) : furnished,
+        parking: typeof parking === "string" ? JSON.parse(parking) : parking,
+        offer: typeof offer === "string" ? JSON.parse(offer) : offer,
+
         uid: auth.currentUser?.uid,
         latitude: lat,
         longitude: lng,

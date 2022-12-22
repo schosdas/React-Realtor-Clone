@@ -80,6 +80,7 @@ function HomeSlider() {
               background: `url(${data.images[0]}) center, no-repeat`,
               backgroundSize: "cover",
             }}
+            // 해당 포스트의 페이지로 이동
             onClick={() => navigate(`/category/${data.type}/${id}`)}
             className="relative w-full h-[300px] overflow-hidden"
           ></div>
