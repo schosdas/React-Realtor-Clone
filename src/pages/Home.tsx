@@ -16,11 +16,7 @@ import {
   DOC_TYPE,
 } from "../constants/key";
 import { db } from "../firebase";
-import { useRecoilState } from "recoil";
-import { isLoadingState } from "../store/atom";
 import { Link, useNavigate } from "react-router-dom";
-import { async } from "@firebase/util";
-import { toast } from "react-toastify";
 import Post from "../components/Post";
 
 interface IPost {
@@ -33,7 +29,6 @@ function Home() {
   const [offers, setOffers] = useState<IPost[]>([]);
   const [rents, setRents] = useState<IPost[]>([]);
   const [sales, setSales] = useState<IPost[]>([]);
-  const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
 
   const navigate = useNavigate();
 
